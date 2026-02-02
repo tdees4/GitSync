@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: gitsync
+
+discord:
+  bot:
+    token: ${GITSYNC_API_KEY:REQUIRED_BUT_MISSING}
