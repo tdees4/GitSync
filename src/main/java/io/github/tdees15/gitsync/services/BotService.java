@@ -1,4 +1,4 @@
-package io.github.tdees15.gitsync.service;
+package io.github.tdees15.gitsync.services;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
