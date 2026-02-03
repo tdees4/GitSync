@@ -10,14 +10,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Handles temporary state storage.
- * State expires after a set amount of time.
+ * Handles temporary state storage; State expires after a set amount of time
  */
 @Service
 public class LinkStateService {
 
     private final Map<String, StateData> stateStore = new ConcurrentHashMap<>();
-    
+
     public void saveState(String state, String discordId, int expiryMinutes) {
         StateData data = new StateData(discordId, LocalDateTime.now().plusMinutes(expiryMinutes));
         stateStore.put(state, data);
