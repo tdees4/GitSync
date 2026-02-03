@@ -1,5 +1,6 @@
-package io.github.tdees15.gitsync.commands;
+package io.github.tdees15.gitsync.discord.commands;
 
+import io.github.tdees15.gitsync.oauth.services.GitHubOAuthService;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.springframework.stereotype.Component;
 
@@ -12,9 +13,21 @@ public class LinkCommand implements SlashCommand {
     private final String name = "link";
     private final String description = "Link your GitHub account to your Discord account.";
 
+    private final GitHubOAuthService gitHubOAuthService;
+
+    public LinkCommand(GitHubOAuthService gitHubOAuthService) {
+        this.gitHubOAuthService = gitHubOAuthService;
+    }
+
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        event.reply("Hello!").queue();
+        String discordId = event.getUser().getId();
+
+        String authUrl = gitHubOAuthService.generateAuthorizationUrl(discordId);
+
+        event.reply("Click here to link your github account: " + authUrl)
+                .setEphemeral(true)
+                .queue();
     }
 
     @Override

@@ -1,6 +1,6 @@
-package io.github.tdees15.gitsync.services;
+package io.github.tdees15.gitsync.config;
 
-import io.github.tdees15.gitsync.commands.SlashCommand;
+import io.github.tdees15.gitsync.discord.commands.SlashCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -14,11 +14,13 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-public class BotService {
+public class JdaConfig {
+
+    @Value("${discord.bot.token}")
+    private String token;
 
     @Bean
-    public JDA jda(@Value("${discord.bot.token}") String token,
-                   List<ListenerAdapter> eventListeners,
+    public JDA jda(List<ListenerAdapter> eventListeners,
                    List<SlashCommand> commandList) {
 
         JDABuilder builder = JDABuilder.createDefault(token)

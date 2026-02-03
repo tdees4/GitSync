@@ -2,9 +2,10 @@ package io.github.tdees15.gitsync;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication
+@EnableJpaRepositories(basePackages = "io.github.tdees15.gitsync")
 public class GitsyncApplication {
 
 	public static void main(String[] args) {

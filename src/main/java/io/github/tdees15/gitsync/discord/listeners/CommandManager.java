@@ -1,5 +1,6 @@
-package io.github.tdees15.gitsync.commands;
+package io.github.tdees15.gitsync.discord.listeners;
 
+import io.github.tdees15.gitsync.discord.commands.SlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
