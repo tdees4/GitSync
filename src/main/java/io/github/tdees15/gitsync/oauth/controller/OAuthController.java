@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Handle authentication endpoints and orchestrates creation of user links in the database
+ */
 @RestController
 @RequestMapping("/api/oauth")
 public class OAuthController {

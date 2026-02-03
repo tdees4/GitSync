@@ -14,6 +14,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Helper functions for GitHub authentication
+ */
 @Service
 public class GitHubOAuthService {
 

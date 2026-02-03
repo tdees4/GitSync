@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class LinkCommand implements SlashCommand {
 
-    private final String name = "link";
-    private final String description = "Link your GitHub account to your Discord account.";
-
     private final GitHubOAuthService gitHubOAuthService;
 
     public LinkCommand(GitHubOAuthService gitHubOAuthService) {
@@ -32,12 +29,12 @@ public class LinkCommand implements SlashCommand {
 
     @Override
     public String getName() {
-        return name;
+        return "link";
     }
 
     @Override
     public String getDescription() {
-        return description;
+        return "Link your GitHub account to your Discord account.";
     }
 
 }
