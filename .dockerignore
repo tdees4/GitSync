@@ -1,0 +1,55 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Gradle files
+.gradle/
+build/
+!gradle/
+gradle-wrapper.jar
+
+# IDE files
+.idea
+.vscode
+*.iml
+*.ipr
+*.iws
+.settings
+.classpath
+.project
+bin/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Docker files
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Documentation
+README.md
+LICENSE
+*.md
+
+# Test files
+src/test/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~

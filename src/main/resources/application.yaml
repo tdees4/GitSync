@@ -17,7 +17,7 @@ github:
   oauth:
     client-id: ${GITHUB_CLIENT_ID}
     client-secret: ${GITHUB_CLIENT_SECRET}
-    callback-url: ${GITHUB_CALLBACK_URL:http://localhost:8000/api/oauth/github/callback}
+    callback-url: ${GITHUB_CALLBACK_URL:http://localhost:8080/api/oauth/github/callback}
 
 encryption:
   secret:
