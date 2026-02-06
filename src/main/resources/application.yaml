@@ -18,7 +18,7 @@ github:
   oauth:
     client-id: ${GITHUB_CLIENT_ID}
     client-secret: ${GITHUB_CLIENT_SECRET}
-    callback-url: https://bot.gitsync-bot.us:8080/api/oauth/github/callback
+    callback-url: https://bot.gitsync-bot.us/api/oauth/github/callback
 
 encryption:
   secret:
