@@ -3,7 +3,8 @@ spring:
     name: gitsync
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
+    username: botuser
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -17,7 +18,7 @@ github:
   oauth:
     client-id: ${GITHUB_CLIENT_ID}
     client-secret: ${GITHUB_CLIENT_SECRET}
-    callback-url: ${GITHUB_CALLBACK_URL:http://localhost:8080/api/oauth/github/callback}
+    callback-url: ${GITHUB_CALLBACK_URL:http://localhost:8010/api/oauth/github/callback}
 
 encryption:
   secret:
