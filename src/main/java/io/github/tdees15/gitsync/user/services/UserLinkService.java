@@ -20,7 +20,9 @@ public class UserLinkService {
     @Transactional
     public UserLink createLink(String discordId, String githubId,
                                String githubUsername, String accessToken) {
-        UserLink link = new UserLink();
+        UserLink link = userLinkRepository.findByDiscordId(discordId)
+                .orElse(new UserLink());
+
         link.setDiscordId(discordId);
         link.setGithubId(githubId);
         link.setGithubUsername(githubUsername);

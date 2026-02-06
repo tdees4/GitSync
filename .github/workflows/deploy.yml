@@ -1,0 +1,43 @@
+name: Deploy to Raspberry Pi
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger from GitHub UI
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Raspberry Pi
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PI_HOST }}
+          username: ${{ secrets.PI_USERNAME }}
+          key: ${{ secrets.PI_SSH_KEY }}
+          port: ${{ secrets.PI_PORT }}
+          script: |
+            cd ~/gitsync-bot
+
+            echo "Pulling latest code from GitHub..."
+            git pull origin main
+
+            echo "Stopping existing containers..."
+            docker compose down
+
+            echo "Building new Docker image..."
+            docker build -t gitsync-bot:local .
+            
+            echo "Starting containers..."
+            docker compose up -d
+            
+            echo "Deployment complete! Container status:"
+            docker compose ps
+            
+            echo "Recent logs:"
+            docker compose logs --tail=50 discord-bot
+            
+            echo "Cleaning up old images..."
+            docker image prune -f
