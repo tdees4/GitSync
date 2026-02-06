@@ -4,40 +4,51 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install Cloudflared
+        run: |
+          wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+          sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
+          sudo chmod +x /usr/local/bin/cloudflared
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PI_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
       - name: Deploy to Raspberry Pi
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.PI_HOST }}
-          username: ${{ secrets.PI_USERNAME }}
-          key: ${{ secrets.PI_SSH_KEY }}
-          port: ${{ secrets.PI_PORT }}
-          script: |
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              -o ProxyCommand="cloudflared access ssh --hostname ${{ secrets.PI_HOST }}" \
+              ${{ secrets.PI_USERNAME }}@${{ secrets.PI_HOST }} << 'EOF'
+          
             cd ~/gitsync-bot
-
-            echo "Pulling latest code from GitHub..."
+          
+            echo "Pulling latest code..."
             git pull origin main
-
-            echo "Stopping existing containers..."
+          
+            echo "Stopping containers..."
             docker compose down
-
-            echo "Building new Docker image..."
+          
+            echo "Building new image..."
             docker build -t gitsync-bot:local .
-            
+          
             echo "Starting containers..."
             docker compose up -d
-            
-            echo "Deployment complete! Container status:"
+          
+            echo "Container status:"
             docker compose ps
-            
+          
             echo "Recent logs:"
             docker compose logs --tail=50 discord-bot
-            
-            echo "Cleaning up old images..."
+          
+            echo "Cleaning up..."
             docker image prune -f
+          EOF
