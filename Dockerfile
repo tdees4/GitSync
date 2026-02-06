@@ -1,6 +1,6 @@
 # STAGE 1
 
-FROM gradle:8.5-jdk21-alpine AS build
+FROM eclipse-temurin:21-jdk AS build
 
 WORKDIR /app
 
