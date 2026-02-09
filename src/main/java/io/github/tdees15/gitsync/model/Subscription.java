@@ -2,23 +2,42 @@ package io.github.tdees15.gitsync.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "subscriptions",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"channelId", "repositoryOwner", "repositoryName"}
+        ))
 public class Subscription {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(nullable = false)
     private String guildId;
+
+    @Column(nullable = false)
     private String channelId;
+
+    @Column(nullable = false)
     private String repositoryOwner;
+
+    @Column(nullable = false)
     private String repositoryName;
 
-    @Column(columnDefinition = "jsonb")
-    private String filterJson;
+    @Column(nullable = false)
+    private String createdBy;
 
-    @ElementCollection
-    @CollectionTable(name = "subscription_filters")
-    private List<Integer> filters; // TODO: Create FilterConfig class & replace Integer with FilterConfig
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "subscription_filters",
+                        joinColumns = @JoinColumn(name = "subscription_id"))
+    private List<FilterConfig> filters = new ArrayList<>();
+
+    private String webhookSecret; // Optional
 }
