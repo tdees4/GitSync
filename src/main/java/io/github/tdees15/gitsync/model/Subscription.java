@@ -1,6 +1,8 @@
 package io.github.tdees15.gitsync.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.List;
         uniqueConstraints = @UniqueConstraint(
                 columnNames = {"channelId", "repositoryOwner", "repositoryName"}
         ))
+@Data
 public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +35,7 @@ public class Subscription {
     private String createdBy;
 
     @Column(nullable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
 
     @ElementCollection(fetch = FetchType.EAGER)
