@@ -1,4 +1,4 @@
-package io.github.tdees15.gitsync.oauth.services;
+package io.github.tdees15.gitsync.service;
 
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;

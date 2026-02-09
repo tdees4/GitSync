@@ -1,10 +1,10 @@
-package io.github.tdees15.gitsync.oauth.controller;
+package io.github.tdees15.gitsync.controller;
 
-import io.github.tdees15.gitsync.oauth.dto.GitHubTokenResponse;
-import io.github.tdees15.gitsync.oauth.dto.GitHubUser;
-import io.github.tdees15.gitsync.oauth.services.GitHubOAuthService;
-import io.github.tdees15.gitsync.oauth.services.LinkStateService;
-import io.github.tdees15.gitsync.user.services.UserLinkService;
+import io.github.tdees15.gitsync.github.dto.GitHubTokenResponse;
+import io.github.tdees15.gitsync.github.dto.GitHubUser;
+import io.github.tdees15.gitsync.service.GitHubOAuthService;
+import io.github.tdees15.gitsync.service.LinkStateService;
+import io.github.tdees15.gitsync.service.UserLinkService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

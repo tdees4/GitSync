@@ -1,6 +1,6 @@
-package io.github.tdees15.gitsync.user.repository;
+package io.github.tdees15.gitsync.repository;
 
-import io.github.tdees15.gitsync.user.entity.UserLink;
+import io.github.tdees15.gitsync.model.UserLink;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

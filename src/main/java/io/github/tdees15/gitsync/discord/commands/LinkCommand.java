@@ -1,6 +1,6 @@
 package io.github.tdees15.gitsync.discord.commands;
 
-import io.github.tdees15.gitsync.oauth.services.GitHubOAuthService;
+import io.github.tdees15.gitsync.service.GitHubOAuthService;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.springframework.stereotype.Component;
 

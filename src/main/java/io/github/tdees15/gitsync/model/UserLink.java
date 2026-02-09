@@ -1,4 +1,4 @@
-package io.github.tdees15.gitsync.user.entity;
+package io.github.tdees15.gitsync.model;
 
 import io.github.tdees15.gitsync.common.util.EncryptedStringConverter;
 import jakarta.persistence.*;

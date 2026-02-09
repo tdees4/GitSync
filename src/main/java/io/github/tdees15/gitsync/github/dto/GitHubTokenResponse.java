@@ -1,4 +1,4 @@
-package io.github.tdees15.gitsync.oauth.dto;
+package io.github.tdees15.gitsync.github.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

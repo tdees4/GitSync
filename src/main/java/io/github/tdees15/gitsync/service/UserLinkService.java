@@ -1,7 +1,7 @@
-package io.github.tdees15.gitsync.user.services;
+package io.github.tdees15.gitsync.service;
 
-import io.github.tdees15.gitsync.user.entity.UserLink;
-import io.github.tdees15.gitsync.user.repository.UserLinkRepository;
+import io.github.tdees15.gitsync.model.UserLink;
+import io.github.tdees15.gitsync.repository.UserLinkRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

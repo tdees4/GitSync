@@ -1,8 +1,8 @@
-package io.github.tdees15.gitsync.oauth.services;
+package io.github.tdees15.gitsync.service;
 
 import io.github.tdees15.gitsync.config.OAuthProperties;
-import io.github.tdees15.gitsync.oauth.dto.GitHubTokenResponse;
-import io.github.tdees15.gitsync.oauth.dto.GitHubUser;
+import io.github.tdees15.gitsync.github.dto.GitHubTokenResponse;
+import io.github.tdees15.gitsync.github.dto.GitHubUser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;

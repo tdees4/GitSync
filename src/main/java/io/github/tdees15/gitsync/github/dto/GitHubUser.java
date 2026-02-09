@@ -1,4 +1,4 @@
-package io.github.tdees15.gitsync.oauth.dto;
+package io.github.tdees15.gitsync.github.dto;
 
 import lombok.Data;
 
