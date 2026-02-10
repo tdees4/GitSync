@@ -20,22 +20,12 @@ public class SubscribeCommand implements SlashCommand {
     }
 
     @Override
-    public String getName() {
-        return "subscribe";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Subscribe the current text channel to a repository.";
-    }
-
-    @Override
     public List<OptionData> getOptions() {
         return List.of(new OptionData(
                 OptionType.STRING,
                 "repository",
                 "The name of the repository you want to subscribe to (Ex: tdees4/repo)"
-                )
+                ).setRequired(true)
         );
     }
 
@@ -50,7 +40,7 @@ public class SubscribeCommand implements SlashCommand {
 
         try {
             if (!event.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-                event.getHook().sendMessage("❌ You need 'Manage Channels' permission to use this command!")
+                event.getHook().sendMessage("❌ You need `Manage Channels` permission to use this command!")
                         .setEphemeral(true)
                         .queue();
                 return;
@@ -73,7 +63,8 @@ public class SubscribeCommand implements SlashCommand {
             event.getHook().sendMessage(
                     "✅ Successfully subscribed <#" + channelId + "> to **" + repository + "**\n" +
                             "📌 All events from all branches will be announced here.\n" +
-                            "💡 Use `/add-filter` to customize what events you want to see."
+                            "💡 Use `/add-filter` to customize what events you want to see.\n" +
+                            "❓ Use `/help-webhook` to learn how to set up your repository for this bot!"
             ).queue();
 
         } catch (IllegalArgumentException e) {
@@ -90,5 +81,15 @@ public class SubscribeCommand implements SlashCommand {
                     .queue();
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String getName() {
+        return "subscribe";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Subscribe the current text channel to a repository.";
     }
 }
