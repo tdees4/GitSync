@@ -1,5 +1,6 @@
 package io.github.tdees15.gitsync.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -7,6 +8,7 @@ import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Embeddable
@@ -16,17 +18,11 @@ public class FilterConfig {
     @Column(nullable = false)
     private String branchPattern; // Glob-based pattern
 
-    @Getter
-    @Setter
-    @ElementCollection
-    @CollectionTable(name = "filter_event_types")
-    private List<String> eventTypes; // ["push", "pull_request", "issue", etc..]
+    @Column(name = "event_types")
+    private String eventTypesStr; // "push,pull-request,etc..."
 
-    @Getter
-    @Setter
-    @ElementCollection
-    @CollectionTable(name = "filter_actions")
-    private List<String> actions; // ["opened", "merged", "closed", etc...]
+    @Column(name = "actions")
+    private String actionsStr; // "opened,merged,etc..."
 
     public FilterConfig() {
         this("*", null, null);
@@ -34,7 +30,31 @@ public class FilterConfig {
 
     public FilterConfig(String branchPattern, List<String> eventTypes, List<String> actions) {
         this.branchPattern = branchPattern;
-        this.eventTypes = eventTypes != null ? eventTypes : List.of("*");
-        this.actions = actions != null ? actions : List.of("*");
+        this.setEventTypes(eventTypes);
+        this.setActions(actions);
+    }
+
+    public List<String> getEventTypes() {
+        return Arrays.asList(eventTypesStr.split(","));
+    }
+
+    public List<String> getActions() {
+        return Arrays.asList(actionsStr.split(","));
+    }
+
+    public void setEventTypes(@Nullable List<String> eventTypes) {
+        if (eventTypes == null || eventTypes.isEmpty()) {
+            this.eventTypesStr = "*";
+        } else {
+            this.eventTypesStr = String.join(",", eventTypes);
+        }
+    }
+
+    public void setActions(@Nullable List<String> actions) {
+        if (actions == null || actions.isEmpty()) {
+            this.actionsStr = "*";
+        } else {
+            this.actionsStr = String.join(",", actions);
+        }
     }
 }
