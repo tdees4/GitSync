@@ -40,7 +40,7 @@ public class Subscription {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "subscription_filters",
-                        joinColumns = @JoinColumn(name = "subscription_id"))
+                        joinColumns = @JoinColumn(name = "subscription_id", referencedColumnName = "id"))
     private List<FilterConfig> filters = new ArrayList<>();
 
     private String webhookSecret; // Optional
