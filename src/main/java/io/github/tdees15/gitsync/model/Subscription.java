@@ -20,7 +20,7 @@ public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String guildId;
@@ -43,7 +43,7 @@ public class Subscription {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "subscription_filters",
-                        joinColumns = @JoinColumn(name = "subscription_id", referencedColumnName = "id"))
+                        joinColumns = @JoinColumn(name = "subscription_id"))
     @Setter(AccessLevel.NONE)
     private List<FilterConfig> filters = new ArrayList<>();
 
