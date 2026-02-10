@@ -36,12 +36,13 @@ public class SubscribeCommand implements SlashCommand {
             return;
         }
 
-        event.deferReply().queue();
+        event.deferReply(true).queue();
 
         try {
-            if (!event.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-                event.getHook().sendMessage("❌ You need `Manage Channels` permission to use this command!")
+            if (!event.getMember().hasPermission(event.getGuildChannel(), Permission.MANAGE_CHANNEL)) {
+                event.getHook()
                         .setEphemeral(true)
+                        .sendMessage("❌ You need `Manage Channels` permission to use this command!")
                         .queue();
                 return;
             }
@@ -68,16 +69,19 @@ public class SubscribeCommand implements SlashCommand {
             ).queue();
 
         } catch (IllegalArgumentException e) {
-            event.getHook().sendMessage("❌ " + e.getMessage())
+            event.getHook()
                     .setEphemeral(true)
+                    .sendMessage("❌ " + e.getMessage())
                     .queue();
         } catch (IllegalStateException e) {
-            event.getHook().sendMessage("⚠️ " + e.getMessage())
+            event.getHook()
                     .setEphemeral(true)
+                    .sendMessage("⚠️ " + e.getMessage())
                     .queue();
         } catch (Exception e) {
-            event.getHook().sendMessage("❌ An error has occurred: " + e.getMessage())
+            event.getHook()
                     .setEphemeral(true)
+                    .sendMessage("❌ An error has occurred: " + e.getMessage())
                     .queue();
             e.printStackTrace();
         }
