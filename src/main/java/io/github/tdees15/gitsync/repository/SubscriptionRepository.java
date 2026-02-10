@@ -11,8 +11,10 @@ import java.util.Optional;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
     @NotNull
-    Optional<Subscription> findByChannelIdAndRepositoryName(String channelId, String repositoryName);
-    void deleteByChannelIdAndRepositoryName(String channelId, String repositoryName);
+    Optional<Subscription> findByChannelIdAndRepositoryOwnerAndRepositoryName(String channelId, String repositoryOwner,
+                                                                              String repositoryName);
+    void deleteByChannelIdAndRepositoryOwnerAndRepositoryName(String channelId, String repositoryOwner,
+                                                              String repositoryName);
 
     @NotNull
     List<Subscription> findByChannelId(String channelId);
