@@ -18,8 +18,7 @@ import java.util.List;
 @Data
 public class Subscription {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sub_seq")
-    @SequenceGenerator(name = "sub_seq", sequenceName = "subscription_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
 
@@ -44,8 +43,7 @@ public class Subscription {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "subscription_filters",
-                        joinColumns = @JoinColumn(name = "subscription_id",
-                                columnDefinition = "BIGINT"))
+                        joinColumns = @JoinColumn(name = "subscription_id"))
     @Setter(AccessLevel.NONE)
     private List<FilterConfig> filters = new ArrayList<>();
 
