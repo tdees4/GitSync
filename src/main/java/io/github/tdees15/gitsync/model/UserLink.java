@@ -2,6 +2,7 @@ package io.github.tdees15.gitsync.model;
 
 import io.github.tdees15.gitsync.common.util.EncryptedStringConverter;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 public class UserLink {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(unique = true, nullable = false)

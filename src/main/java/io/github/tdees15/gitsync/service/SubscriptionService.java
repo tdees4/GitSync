@@ -55,13 +55,17 @@ public class SubscriptionService {
         subscription.setCreatedBy(userId);
         subscription.setCreatedAt(LocalDateTime.now());
 
+        // Ensure the subscription row exists before filter row
+        subscription = subscriptionRepository.saveAndFlush(subscription);
+
         FilterConfig defaultFilter = new FilterConfig(
                 "*",
                 List.of("*"),
                 List.of("*")
         );
 
-        subscription.setFilters(List.of(defaultFilter));
+        subscription.getFilters().clear();
+        subscription.getFilters().add(defaultFilter);
 
         return subscriptionRepository.save(subscription);
     }
