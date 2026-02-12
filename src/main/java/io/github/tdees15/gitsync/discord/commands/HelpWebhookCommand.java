@@ -27,7 +27,7 @@ public class HelpWebhookCommand implements SlashCommand {
                                 :three:  Copy the URL `https://bot.gitsync-bot.us/webhook/github` into the text box labeled `Payload URL`
                                 :four:  **OPTIONAL** Enter a randomly generated secret string in the text box labeled `Secret`
                                 :five:  Ensure SSL Verification is enabled
-                                :six:  For simple setup, select `Send me everything` under *`hich events would you like to trigger this webhook?`
+                                :six:  For simple setup, select `Send me everything` under `Which events would you like to trigger this webhook?`
                                 :seven:  Click `Add webhook`
                                 """
                 )
