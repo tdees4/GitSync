@@ -1,7 +1,9 @@
 package io.github.tdees15.gitsync.discord.commands;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import org.springframework.stereotype.Component;
 
+@Component
 public class HelpWebhookCommand implements SlashCommand {
 
     @Override
