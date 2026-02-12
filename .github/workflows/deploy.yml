@@ -47,7 +47,7 @@ jobs:
             docker compose ps
           
             echo "Recent logs:"
-            docker compose logs --tail=50 discord-bot
+            docker compose logs --tail=50 gitsync-bot
           
             echo "Cleaning up..."
             docker image prune -f

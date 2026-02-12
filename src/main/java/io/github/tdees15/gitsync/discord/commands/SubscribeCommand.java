@@ -42,7 +42,7 @@ public class SubscribeCommand implements SlashCommand {
             if (!event.getMember().hasPermission(event.getGuildChannel(), Permission.MANAGE_CHANNEL)) {
                 event.getHook()
                         .setEphemeral(true)
-                        .sendMessage("❌ You need `Manage Channels` permission to use this command!")
+                        .sendMessage(":x: You need `Manage Channels` permission to use this command!")
                         .queue();
                 return;
             }
@@ -62,26 +62,26 @@ public class SubscribeCommand implements SlashCommand {
             );
 
             event.getHook().sendMessage(
-                    "✅ Successfully subscribed <#" + channelId + "> to **" + repository + "**\n" +
-                            "📌 All events from all branches will be announced here.\n" +
-                            "💡 Use `/add-filter` to customize what events you want to see.\n" +
-                            "❓ Use `/help-webhook` to learn how to set up your repository for this bot!"
+                    ":white_check_mark: Successfully subscribed <#" + channelId + "> to **" + repository + "**\n" +
+                            ":pushpin: All events from all branches will be announced here.\n" +
+                            ":bulb: Use `/add-filter` to customize what events you want to see.\n" +
+                            ":question: Use `/help-webhook` to learn how to set up your repository for this bot!"
             ).queue();
 
         } catch (IllegalArgumentException e) {
             event.getHook()
                     .setEphemeral(true)
-                    .sendMessage("❌ " + e.getMessage())
+                    .sendMessage(":x: " + e.getMessage())
                     .queue();
         } catch (IllegalStateException e) {
             event.getHook()
                     .setEphemeral(true)
-                    .sendMessage("⚠️ " + e.getMessage())
+                    .sendMessage(":warning: " + e.getMessage())
                     .queue();
         } catch (Exception e) {
             event.getHook()
                     .setEphemeral(true)
-                    .sendMessage("❌ An error has occurred: " + e.getMessage())
+                    .sendMessage(":x: An error has occurred: " + e.getMessage())
                     .queue();
             e.printStackTrace();
         }

@@ -54,4 +54,4 @@ services:
 
 networks:
   default:
-    name: discord-bot-network
+    name: gitsync-bot-network
