@@ -108,8 +108,41 @@ public class SubscriptionServiceTest {
         );
 
         assertFalse(result.getFilters().isEmpty());
-        assertEquals("*", result.getFilters().get(0).getBranchPattern());
-        assertTrue(result.getFilters().get(0).getEventTypes().contains("*"));
-        assertTrue(result.getFilters().get(0).getActions().contains("*"));
+        assertEquals("*", result.getFilters().getFirst().getBranchPattern());
+        assertTrue(result.getFilters().getFirst().getEventTypes().contains("*"));
+        assertTrue(result.getFilters().getFirst().getActions().contains("*"));
+    }
+
+    @Test
+    void deleteSubscription_ValidExistingSubscription_ThrowsNoExceptions() {
+        when(subscriptionRepository.findByChannelIdAndRepositoryOwnerAndRepositoryName(
+                any(), any(), any()
+        )).thenReturn(Optional.of(new Subscription()));
+
+        subscriptionService.deleteSubscription("channel123", "tdees4/gitsync");
+    }
+
+    @Test
+    void deleteSubscription_InvalidRepoName_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                subscriptionService.deleteSubscription(
+                        "channel123",
+                        "tdees4-gitsync"
+                )
+        );
+    }
+
+    @Test
+    void deleteSubscription_SubscriptionDoesNotExist_ThrowsException() {
+        when(subscriptionRepository.findByChannelIdAndRepositoryOwnerAndRepositoryName(
+                any(), any(), any()
+        )).thenReturn(Optional.empty());
+
+        assertThrows(IllegalStateException.class, () ->
+                subscriptionService.deleteSubscription(
+                        "channel123",
+                        "tdees4/gitsync"
+                )
+        );
     }
 }
