@@ -25,10 +25,11 @@ public class GitHubOAuthService {
     private final RestTemplate restTemplate;
 
     public GitHubOAuthService(OAuthProperties oAuthProperties,
-                              LinkStateService linkStateService) {
+                              LinkStateService linkStateService,
+                              RestTemplate restTemplate) {
         this.oAuthProperties = oAuthProperties;
         this.linkStateService = linkStateService;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
     }
 
     public String generateAuthorizationUrl(String discordId) {
