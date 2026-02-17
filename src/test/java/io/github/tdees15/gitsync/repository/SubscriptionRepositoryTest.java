@@ -30,10 +30,14 @@ public class SubscriptionRepositoryTest {
 
     @Test
     void whenFindByChannelIdAndRepositoryOwnerAndRepositoryName_ThenReturnSubscription() {
+        String targetChannelId = "channel123";
+        String targetRepositoryOwner = "tdees4";
+        String targetRepositoryName = "gitsync";
+
         Subscription mockSubscription = createSubscription(
-                "channel123",
-                "tdees4",
-                "gitsync",
+                targetChannelId,
+                targetRepositoryOwner,
+                targetRepositoryName,
                 "guild123",
                 "discordtdees4"
         );
@@ -41,28 +45,32 @@ public class SubscriptionRepositoryTest {
         testEntityManager.persist(mockSubscription);
         testEntityManager.flush();
 
-        Optional<Subscription> found = subscriptionRepository
+        Optional<Subscription> target = subscriptionRepository
                 .findByChannelIdAndRepositoryOwnerAndRepositoryName(
-                        mockSubscription.getChannelId(),
-                        mockSubscription.getRepositoryOwner(),
-                        mockSubscription.getRepositoryName()
+                        targetChannelId,
+                        targetRepositoryOwner,
+                        targetRepositoryName
                 );
 
-        assertTrue(found.isPresent());
+        assertTrue(target.isPresent());
 
-        Subscription foundSubscription = found.get();
+        Subscription targetSubscription = target.get();
 
-        assertEquals(mockSubscription.getRepositoryName(), foundSubscription.getRepositoryName());
-        assertEquals(mockSubscription.getRepositoryOwner(), foundSubscription.getRepositoryOwner());
-        assertEquals(mockSubscription.getChannelId(), foundSubscription.getChannelId());
+        assertEquals(targetChannelId, targetSubscription.getChannelId());
+        assertEquals(targetRepositoryOwner, targetSubscription.getRepositoryOwner());
+        assertEquals(targetRepositoryName, targetSubscription.getRepositoryName());
     }
 
     @Test
     void whenDeleteByChannelIdAndRepositoryOwnerAndRepositoryName_ThenDeleteSubscription() {
+        String targetChannelId = "channel123";
+        String targetRepositoryOwner = "tdees4";
+        String targetRepositoryName = "gitsync";
+
         Subscription mockSubscription = createSubscription(
-                "channel123",
-                "tdees4",
-                "gitsync",
+                targetChannelId,
+                targetRepositoryOwner,
+                targetRepositoryName,
                 "guild123",
                 "discordtdees4"
         );
@@ -72,17 +80,17 @@ public class SubscriptionRepositoryTest {
 
         subscriptionRepository
                 .deleteByChannelIdAndRepositoryOwnerAndRepositoryName(
-                        mockSubscription.getChannelId(),
-                        mockSubscription.getRepositoryOwner(),
-                        mockSubscription.getRepositoryName()
+                        targetChannelId,
+                        targetRepositoryOwner,
+                        targetRepositoryName
                 );
 
         assertFalse(
                 subscriptionRepository
                         .findByChannelIdAndRepositoryOwnerAndRepositoryName(
-                                mockSubscription.getChannelId(),
-                                mockSubscription.getRepositoryOwner(),
-                                mockSubscription.getRepositoryName()
+                                targetChannelId,
+                                targetRepositoryOwner,
+                                targetRepositoryName
                         )
                         .isPresent()
         );
@@ -90,8 +98,10 @@ public class SubscriptionRepositoryTest {
 
     @Test
     void whenFindByChannelId_ThenReturnValidListOfSubscriptions() {
+        String targetChannelId = "channel123";
+
         Subscription mockSubscription = createSubscription(
-                "channel123",
+                targetChannelId,
                 "tdees4",
                 "gitsync",
                 "guild123",
@@ -110,18 +120,19 @@ public class SubscriptionRepositoryTest {
         testEntityManager.persist(otherMockSubscription);
         testEntityManager.flush();
 
-        List<Subscription> subscriptions = subscriptionRepository
-                .findByChannelId(mockSubscription.getChannelId());
+        List<Subscription> targetSubscriptions = subscriptionRepository.findByChannelId(targetChannelId);
 
-        for (Subscription subscription : subscriptions) {
-            assertEquals(mockSubscription.getChannelId(), subscription.getChannelId());
-        }
+        targetSubscriptions.forEach((subscription ->
+            assertEquals(targetChannelId, subscription.getChannelId())
+        ));
     }
 
     @Test
     void whenDeleteByChannelId_ThenAllValidSubscriptionsAreDeleted() {
+        String targetChannelId = "channel123";
+
         Subscription mockSubscription = createSubscription(
-                "channel123",
+                targetChannelId,
                 "tdees4",
                 "gitsync",
                 "guild123",
@@ -137,7 +148,7 @@ public class SubscriptionRepositoryTest {
         );
 
         Subscription anotherMockSubscription = createSubscription(
-                "channel123",
+                targetChannelId,
                 "tdees4",
                 "otherbot",
                 "gitsync",
@@ -150,22 +161,129 @@ public class SubscriptionRepositoryTest {
         testEntityManager.flush();
 
         int numSubscriptionsWithOtherChannelId = 0;
-        List<Subscription> allSubscriptions = subscriptionRepository
-                .findAll();
+        List<Subscription> allSubscriptions = subscriptionRepository.findAll();
         for (Subscription subscription : allSubscriptions) {
-            if (!subscription.getChannelId().equals(mockSubscription.getChannelId()))
+            if (!subscription.getChannelId().equals(targetChannelId))
                 numSubscriptionsWithOtherChannelId++;
         }
 
-        subscriptionRepository.deleteByChannelId(mockSubscription.getChannelId());
+        subscriptionRepository.deleteByChannelId(targetChannelId);
 
         allSubscriptions = subscriptionRepository.findAll();
 
         assertEquals(numSubscriptionsWithOtherChannelId, allSubscriptions.size());
+        assertEquals(0, subscriptionRepository
+                .findByChannelId(targetChannelId)
+                .size());
+    }
 
+    @Test
+    void whenFindByRepositoryOwnerAndRepositoryName_ThenReturnValidListOfSubscriptions() {
+        String targetRepositoryOwner = "tdees4";
+        String targetRepositoryName = "gitsync";
+
+        Subscription mockSubscription = createSubscription(
+                "channel123",
+                targetRepositoryOwner,
+                targetRepositoryName,
+                "guild123",
+                "discordtdees4"
+        );
+
+        Subscription otherMockSubscription = createSubscription(
+                "channel456",
+                targetRepositoryOwner,
+                targetRepositoryName,
+                "guild1234",
+                "discordtdees4"
+        );
+
+        Subscription anotherMockSubscription = createSubscription(
+                "channel123",
+                "user123",
+                targetRepositoryName,
+                "guild123",
+                "discordtdees4"
+        );
+
+        testEntityManager.persist(mockSubscription);
+        testEntityManager.persist(otherMockSubscription);
+        testEntityManager.persist(anotherMockSubscription);
+        testEntityManager.flush();
+
+        List<Subscription> allSubscriptions = subscriptionRepository.findAll();
+
+        int numOfTargetedSubscriptions = 0;
         for (Subscription subscription : allSubscriptions) {
-            assertNotEquals(mockSubscription.getChannelId(), subscription.getChannelId());
+            if (subscription.getRepositoryName().equals(targetRepositoryName)
+                    && subscription.getRepositoryOwner().equals(targetRepositoryOwner))
+                numOfTargetedSubscriptions++;
         }
+
+        List<Subscription> targetSubscriptions = subscriptionRepository.findByRepositoryOwnerAndRepositoryName(
+                targetRepositoryOwner,
+                targetRepositoryName
+        );
+
+        assertEquals(numOfTargetedSubscriptions, targetSubscriptions.size());
+        targetSubscriptions.forEach((subscription) -> {
+           assertEquals(targetRepositoryName, subscription.getRepositoryName());
+           assertEquals(targetRepositoryOwner, subscription.getRepositoryOwner());
+        });
+    }
+
+    @Test
+    void whenDeleteByRepositoryOwnerAndRepositoryName_ThenAllValidSubscriptionsAreDeleted() {
+        String targetRepositoryOwner = "tdees4";
+        String targetRepositoryName = "gitsync";
+
+        Subscription mockSubscription = createSubscription(
+                "channel123",
+                targetRepositoryOwner,
+                targetRepositoryName,
+                "guild123",
+                "discordtdees4"
+        );
+
+        Subscription otherMockSubscription = createSubscription(
+                "channel456",
+                targetRepositoryOwner,
+                targetRepositoryName,
+                "guild1234",
+                "discordtdees4"
+        );
+
+        Subscription anotherMockSubscription = createSubscription(
+                "channel123",
+                "user123",
+                targetRepositoryName,
+                "guild123",
+                "discordtdees4"
+        );
+
+        testEntityManager.persist(mockSubscription);
+        testEntityManager.persist(otherMockSubscription);
+        testEntityManager.persist(anotherMockSubscription);
+        testEntityManager.flush();
+
+        List<Subscription> allSubscriptions = subscriptionRepository.findAll();
+
+        int numOfTargetedSubscriptions = 0;
+        for (Subscription subscription : allSubscriptions) {
+            if (subscription.getRepositoryName().equals(targetRepositoryName)
+                    && subscription.getRepositoryOwner().equals(targetRepositoryOwner))
+                numOfTargetedSubscriptions++;
+        }
+        int remainingSubscriptions = allSubscriptions.size() - numOfTargetedSubscriptions;
+
+        subscriptionRepository.deleteByRepositoryOwnerAndRepositoryName(targetRepositoryOwner, targetRepositoryName);
+
+        allSubscriptions = subscriptionRepository.findAll();
+
+        assertEquals(remainingSubscriptions, allSubscriptions.size());
+        assertEquals(0, subscriptionRepository
+                .findByRepositoryOwnerAndRepositoryName(targetRepositoryOwner, targetRepositoryName)
+                .size());
     }
 
     private Subscription createSubscription(String channelId, String repositoryOwner,
