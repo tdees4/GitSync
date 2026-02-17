@@ -1,7 +1,5 @@
 package io.github.tdees15.gitsync.service;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import io.github.tdees15.gitsync.config.GitHubApiProperties;
 import io.github.tdees15.gitsync.config.OAuthProperties;
 import io.github.tdees15.gitsync.github.dto.GitHubTokenResponse;
@@ -9,37 +7,28 @@ import io.github.tdees15.gitsync.github.dto.GitHubUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import org.wiremock.spring.EnableWireMock;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@EnableWireMock
 @ExtendWith(MockitoExtension.class)
 public class GitHubOAuthServiceTest {
-
-    @RegisterExtension
-    static WireMockExtension wireMockExtension = WireMockExtension.newInstance()
-            .options(wireMockConfig().dynamicPort())
-            .build();
 
     @Mock
     OAuthProperties oAuthProperties;
@@ -144,48 +133,59 @@ public class GitHubOAuthServiceTest {
 
     @Test
     void getGitHubUser_ValidInput_ReturnsValidGitHubUser() {
-        String accessToken = "token";
-        String mockLogin = "\"githubuser123\"";
-        int mockId = 1;
-        String mockEmail = "\"githubuser@email.com\"";
-        String mockName = "\"github user\"";
+        when(gitHubApiProperties.getBaseUrl())
+                .thenReturn("https://api.github.com");
 
-        wireMockExtension.stubFor(
-                WireMock
-                        .get(urlEqualTo("/user"))
-                        .withHeader("Authorization", equalTo("Bearer " + accessToken))
-                        .willReturn(jsonResponse(
-                                "{\"login\": " + mockLogin + "," +
-                                        "\"id\": " + mockId + "," +
-                                        "\"email\":  " + mockEmail + "," +
-                                        "\"name\":  " + mockName + "}",
-                                200
-                        ))
+        GitHubUser mockUser = new GitHubUser();
+        mockUser.setId("1");
+        mockUser.setLogin("githubuser123");
+        mockUser.setName("github user");
+        mockUser.setEmail("githubuser@email.com");
+
+        ResponseEntity<GitHubUser> mockResponse =
+                ResponseEntity.ok(mockUser);
+
+        when(restTemplate.exchange(
+                anyString(),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                eq(GitHubUser.class)
+        )).thenReturn(mockResponse);
+
+        GitHubUser result =
+                gitHubOAuthService.getGitHubUser("123");
+
+        assertEquals(mockUser.getId(), result.getId());
+        assertEquals(mockUser.getEmail(), result.getEmail());
+        assertEquals(mockUser.getLogin(), result.getLogin());
+        assertEquals(mockUser.getName(), result.getName());
+
+        ArgumentCaptor<String> urlCaptor =
+                ArgumentCaptor.forClass(String.class);
+
+        @SuppressWarnings("rawtypes")
+        ArgumentCaptor<HttpEntity> entityCaptor =
+                ArgumentCaptor.forClass(HttpEntity.class);
+
+        verify(restTemplate).exchange(
+                urlCaptor.capture(),
+                eq(HttpMethod.GET),
+                entityCaptor.capture(),
+                eq(GitHubUser.class)
         );
 
-        GitHubApiProperties mockProps = new GitHubApiProperties();
-        mockProps.setBaseUrl(wireMockExtension.getRuntimeInfo().getHttpBaseUrl());
-        mockProps.setBasePublicUrl(wireMockExtension.getRuntimeInfo().getHttpBaseUrl());
-
-        RestTemplate mockRestTemplate = new RestTemplate();
-
-        GitHubOAuthService mockGitHubOAuthService = new GitHubOAuthService(
-                oAuthProperties,
-                linkStateService,
-                mockRestTemplate,
-                mockProps
+        assertEquals(
+                "https://api.github.com/user",
+                urlCaptor.getValue()
         );
 
-        GitHubUser actualUser = mockGitHubOAuthService.getGitHubUser(accessToken);
+        HttpEntity<?> capturedEntity = entityCaptor.getValue();
+        assertNotNull(capturedEntity);
 
-        try {
-            assertEquals(mockId, Integer.parseInt(actualUser.getId()));
-        } catch (NumberFormatException e) {
-            System.err.println("ID returned non-number value");
-        }
-        assertEquals(mockLogin.replaceAll("\"", ""), actualUser.getLogin());
-        assertEquals(mockName.replaceAll("\"", ""), actualUser.getName());
-        assertEquals(mockEmail.replaceAll("\"", ""), actualUser.getEmail());
+        HttpHeaders capturedHeaders = capturedEntity.getHeaders();
+
+        String authHeader = capturedHeaders.getFirst("Authorization");
+        assertEquals("Bearer 123", authHeader);
     }
 
 }
