@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OAuthControllerTest {
@@ -61,6 +61,17 @@ public class OAuthControllerTest {
 
         ResponseEntity<?> response = oAuthController
                 .githubCallback("123", "hrhertg");
+
+        verify(linkStateService, times(1))
+                .deleteState(any());
+
+        verify(userLinkService, times(1))
+                .createLink(
+                        anyString(),
+                        anyString(),
+                        anyString(),
+                        anyString()
+                );
 
         assertTrue(response.getStatusCode().is2xxSuccessful());
     }
