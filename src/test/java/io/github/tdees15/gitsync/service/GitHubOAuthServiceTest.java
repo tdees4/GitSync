@@ -1,10 +1,8 @@
 package io.github.tdees15.gitsync.service;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import io.github.tdees15.gitsync.config.GitHubApiProperties;
 import io.github.tdees15.gitsync.config.OAuthProperties;
 import io.github.tdees15.gitsync.github.dto.GitHubTokenResponse;
 import io.github.tdees15.gitsync.github.dto.GitHubUser;
@@ -22,7 +20,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.client.RestTemplate;
 import org.wiremock.spring.EnableWireMock;
-import org.wiremock.spring.InjectWireMock;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -53,13 +50,11 @@ public class GitHubOAuthServiceTest {
     @Mock
     RestTemplate restTemplate;
 
+    @Mock
+    GitHubApiProperties gitHubApiProperties;
+
     @InjectMocks
     GitHubOAuthService gitHubOAuthService;
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("https://api.github.com", wireMockExtension::baseUrl);
-    }
 
     @BeforeEach
     void setUp() {
@@ -85,7 +80,7 @@ public class GitHubOAuthServiceTest {
             String actualUrl = gitHubOAuthService.generateAuthorizationUrl(discordId);
 
             String expectedUrl = String.format(
-                    "https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s&state=%s&scope=user:email",
+                    gitHubApiProperties.getBasePublicUrl() + "/login/oauth/authorize?client_id=%s&redirect_uri=%s&state=%s&scope=user:email",
                     clientId,
                     URLEncoder.encode(callbackUrl, StandardCharsets.UTF_8),
                     expectedUUID
@@ -100,7 +95,7 @@ public class GitHubOAuthServiceTest {
         String clientId = "bFEnnfeK123";
         String clientSecret = "FBEhJBFehjBFHJwJHDj";
         String code = "secret-code";
-        String url = "https://github.com/login/oauth/access_token";
+        String url = gitHubApiProperties.getBasePublicUrl() + "/login/oauth/access_token";
 
         GitHubTokenResponse expectedResponse = new GitHubTokenResponse();
         expectedResponse.setAccessToken("access-token");
@@ -168,7 +163,20 @@ public class GitHubOAuthServiceTest {
                         ))
         );
 
-        GitHubUser actualUser = gitHubOAuthService.getGitHubUser(accessToken);
+        GitHubApiProperties mockProps = new GitHubApiProperties();
+        mockProps.setBaseUrl(wireMockExtension.getRuntimeInfo().getHttpBaseUrl());
+        mockProps.setBasePublicUrl(wireMockExtension.getRuntimeInfo().getHttpBaseUrl());
+
+        RestTemplate mockRestTemplate = new RestTemplate();
+
+        GitHubOAuthService mockGitHubOAuthService = new GitHubOAuthService(
+                oAuthProperties,
+                linkStateService,
+                mockRestTemplate,
+                mockProps
+        );
+
+        GitHubUser actualUser = mockGitHubOAuthService.getGitHubUser(accessToken);
 
         try {
             assertEquals(mockId, Integer.parseInt(actualUser.getId()));

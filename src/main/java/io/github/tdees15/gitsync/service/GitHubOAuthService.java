@@ -1,5 +1,6 @@
 package io.github.tdees15.gitsync.service;
 
+import io.github.tdees15.gitsync.config.GitHubApiProperties;
 import io.github.tdees15.gitsync.config.OAuthProperties;
 import io.github.tdees15.gitsync.github.dto.GitHubTokenResponse;
 import io.github.tdees15.gitsync.github.dto.GitHubUser;
@@ -23,13 +24,16 @@ public class GitHubOAuthService {
     private final OAuthProperties oAuthProperties;
     private final LinkStateService linkStateService;
     private final RestTemplate restTemplate;
+    private final GitHubApiProperties gitHubApiProperties;
 
     public GitHubOAuthService(OAuthProperties oAuthProperties,
                               LinkStateService linkStateService,
-                              RestTemplate restTemplate) {
+                              RestTemplate restTemplate,
+                              GitHubApiProperties gitHubApiProperties) {
         this.oAuthProperties = oAuthProperties;
         this.linkStateService = linkStateService;
         this.restTemplate = restTemplate;
+        this.gitHubApiProperties = gitHubApiProperties;
     }
 
     public String generateAuthorizationUrl(String discordId) {
@@ -37,7 +41,8 @@ public class GitHubOAuthService {
         linkStateService.saveState(state, discordId, 10);
 
         return String.format(
-                "https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s&state=%s&scope=user:email",
+                gitHubApiProperties.getBasePublicUrl() +
+                        "/login/oauth/authorize?client_id=%s&redirect_uri=%s&state=%s&scope=user:email",
                 oAuthProperties.getClientId(),
                 URLEncoder.encode(oAuthProperties.getCallbackUrl(), StandardCharsets.UTF_8),
                 state
@@ -57,7 +62,7 @@ public class GitHubOAuthService {
         HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
 
         return restTemplate.postForObject(
-                "https://github.com/login/oauth/access_token",
+                gitHubApiProperties.getBasePublicUrl() + "/login/oauth/access_token",
                 request,
                 GitHubTokenResponse.class
         );
@@ -70,7 +75,7 @@ public class GitHubOAuthService {
         HttpEntity<?> request = new HttpEntity<>(headers);
 
         return restTemplate.exchange(
-                "https://api.github.com/user",
+                gitHubApiProperties.getBaseUrl() + "/user",
                 HttpMethod.GET,
                 request,
                 GitHubUser.class
