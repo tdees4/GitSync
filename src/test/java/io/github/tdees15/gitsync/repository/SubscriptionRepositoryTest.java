@@ -3,10 +3,11 @@ package io.github.tdees15.gitsync.repository;
 import io.github.tdees15.gitsync.common.util.EncryptedStringConverter;
 import io.github.tdees15.gitsync.common.util.EncryptionUtil;
 import io.github.tdees15.gitsync.model.Subscription;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
@@ -20,7 +21,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @Import({EncryptionUtil.class, EncryptedStringConverter.class})
 @TestPropertySource(properties = "encryption.secret.key=ZHVtbXlfMTYtYnl0ZV9rZXk=")
-public class SubscriptionRepositoryTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Transactional
+public class SubscriptionRepositoryTest extends PostgresContainerTest {
 
     @Autowired
     private SubscriptionRepository subscriptionRepository;
