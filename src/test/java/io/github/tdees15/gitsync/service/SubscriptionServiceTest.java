@@ -86,6 +86,8 @@ public class SubscriptionServiceTest {
                         "user123"
                 )
         );
+
+        verify(subscriptionRepository, never()).save(any());
     }
 
     @Test
@@ -120,6 +122,8 @@ public class SubscriptionServiceTest {
         )).thenReturn(Optional.of(new Subscription()));
 
         subscriptionService.deleteSubscription("channel123", "tdees4/gitsync");
+
+        verify(subscriptionRepository, times(1)).delete(any());
     }
 
     @Test
@@ -144,5 +148,7 @@ public class SubscriptionServiceTest {
                         "tdees4/gitsync"
                 )
         );
+
+        verify(subscriptionRepository, never()).delete(any());
     }
 }

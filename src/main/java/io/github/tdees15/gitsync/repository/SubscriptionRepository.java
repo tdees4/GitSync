@@ -21,6 +21,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     void deleteByChannelId(String channelId);
 
     @NotNull
-    List<Subscription> findByRepositoryName(String repositoryName);
-    void deleteByRepositoryName(String repositoryName);
+    List<Subscription> findByRepositoryOwnerAndRepositoryName(String repositoryOwner, String repositoryName);
+    void deleteByRepositoryOwnerAndRepositoryName(String repositoryOwner, String repositoryName);
 }
