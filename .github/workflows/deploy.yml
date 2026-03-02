@@ -50,18 +50,6 @@ jobs:
           echo "${{ secrets.PI_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
-      - name: Set deployment variables
-        run: |
-          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-  
-          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
-            echo "COMPOSE_FILE=docker-compose.prod.yml" >> $GITHUB_ENV
-            echo "PROJECT_NAME=prod" >> $GITHUB_ENV
-          else
-            echo "COMPOSE_FILE=docker-compose.dev.yml" >> $GITHUB_ENV
-            echo "PROJECT_NAME=dev" >> $GITHUB_ENV
-          fi
-
       - name: Deploy to Raspberry Pi
         run: |
           ssh -o StrictHostKeyChecking=no \
@@ -69,6 +57,16 @@ jobs:
               ${{ secrets.PI_USERNAME }}@${{ secrets.PI_HOST }} << 'EOF'
           
             cd ~/gitsync-bot
+
+            echo "Setting up variables..."
+            echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+            if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+              echo "COMPOSE_FILE=docker-compose.prod.yml" >> $GITHUB_ENV
+              echo "PROJECT_NAME=prod" >> $GITHUB_ENV
+            else
+              echo "COMPOSE_FILE=docker-compose.dev.yml" >> $GITHUB_ENV
+              echo "PROJECT_NAME=dev" >> $GITHUB_ENV
+            fi
           
             echo "Pulling latest code..."
             git fetch origin
@@ -76,10 +74,10 @@ jobs:
             git pull origin $BRANCH
           
             echo "Stopping containers..."
-            docker compose -P $PROJECT_NAME -f $COMPOSE_FILE down
+            docker compose -f $COMPOSE_FILE down
           
             echo "Building latest image..."
-            docker compose -f $COMPOSE_FILE build --no-cache
+            docker compose -f $COMPOSE_FILE build
           
             echo "Starting containers..."
             docker compose -f $COMPOSE_FILE up -d
