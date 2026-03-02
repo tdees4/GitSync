@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-dev:5432/postgres_dev
+
+discord:
+  bot:
+    token: ${GITSYNC_DEV_API_KEY:REQUIRED_BUT_MISSING}
+
+app:
+  base-url: https://dev-bot.gitsync-bot.us

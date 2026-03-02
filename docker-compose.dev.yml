@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres-dev:
+    image: postgres:16-alpine
+    container_name: gitsync-bot-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres_dev
+      POSTGRES_USER: botuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./postgres-dev-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U botuser -d postgres_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  gitsync-bot:
+    image: tdees15/gitsync-bot:dev
+    container_name: gitsync-bot-dev
+    restart: unless-stopped
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-dev:5432/postgres_dev
+      SPRING_DATASOURCE_USERNAME: botuser
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      GITSYNC_API_KEY: ${GITSYNC_DEV_API_KEY}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      GITSYNC_ENCRYPTION_KEY: ${GITSYNC_ENCRYPTION_KEY}
+    ports:
+      - "8011:8080"
+    volumes:
+      - ./logs-dev:/app/logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+networks:
+  default:
+    name: gitsync-bot-network-dev

@@ -1,5 +1,6 @@
 package io.github.tdees15.gitsync.service;
 
+import io.github.tdees15.gitsync.config.AppProperties;
 import io.github.tdees15.gitsync.config.GitHubApiProperties;
 import io.github.tdees15.gitsync.config.OAuthProperties;
 import io.github.tdees15.gitsync.github.dto.GitHubTokenResponse;
@@ -42,6 +43,9 @@ public class GitHubOAuthServiceTest {
     @Mock
     GitHubApiProperties gitHubApiProperties;
 
+    @Mock
+    AppProperties appProperties;
+
     @InjectMocks
     GitHubOAuthService gitHubOAuthService;
 
@@ -59,10 +63,13 @@ public class GitHubOAuthServiceTest {
             mockedUUID.when(UUID::randomUUID).thenReturn(expectedUUID);
 
             String clientId = "geKEjEKW12hEo3";
-            String callbackUrl = "http://localhost:8080/callback";
+            String callbackRoute = "/callback";
+            String baseUrl = "http://localhost:8080";
+            String callbackUrl = baseUrl + callbackRoute;
 
             when(oAuthProperties.getClientId()).thenReturn(clientId);
-            when(oAuthProperties.getCallbackUrl()).thenReturn(callbackUrl);
+            when(oAuthProperties.getCallbackRoute()).thenReturn(callbackRoute);
+            when(appProperties.getBaseUrl()).thenReturn(baseUrl);
 
             String discordId = "user123";
 

@@ -1,5 +1,6 @@
 package io.github.tdees15.gitsync.service;
 
+import io.github.tdees15.gitsync.config.AppProperties;
 import io.github.tdees15.gitsync.config.GitHubApiProperties;
 import io.github.tdees15.gitsync.config.OAuthProperties;
 import io.github.tdees15.gitsync.github.dto.GitHubTokenResponse;
@@ -25,26 +26,31 @@ public class GitHubOAuthService {
     private final LinkStateService linkStateService;
     private final RestTemplate restTemplate;
     private final GitHubApiProperties gitHubApiProperties;
+    private final AppProperties appProperties;
 
     public GitHubOAuthService(OAuthProperties oAuthProperties,
                               LinkStateService linkStateService,
                               RestTemplate restTemplate,
-                              GitHubApiProperties gitHubApiProperties) {
+                              GitHubApiProperties gitHubApiProperties,
+                              AppProperties appProperties) {
         this.oAuthProperties = oAuthProperties;
         this.linkStateService = linkStateService;
         this.restTemplate = restTemplate;
         this.gitHubApiProperties = gitHubApiProperties;
+        this.appProperties = appProperties;
     }
 
     public String generateAuthorizationUrl(String discordId) {
         String state = UUID.randomUUID().toString();
         linkStateService.saveState(state, discordId, 10);
 
+        String callbackUrl = appProperties.getBaseUrl() + oAuthProperties.getCallbackRoute();
+
         return String.format(
                 gitHubApiProperties.getBasePublicUrl() +
                         "/login/oauth/authorize?client_id=%s&redirect_uri=%s&state=%s&scope=user:email",
                 oAuthProperties.getClientId(),
-                URLEncoder.encode(oAuthProperties.getCallbackUrl(), StandardCharsets.UTF_8),
+                URLEncoder.encode(callbackUrl, StandardCharsets.UTF_8),
                 state
         );
     }

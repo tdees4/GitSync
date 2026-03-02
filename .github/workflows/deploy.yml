@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -32,8 +33,40 @@ jobs:
           name: test-results
           path: build/reports/tests/
 
-  deploy:
+  build:
     needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set image tag
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "TAG=prod" >> $GITHUB_ENV
+          else
+            echo "TAG=dev" >> $GITHUB_ENV
+          fi
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push multi-arch image # Raspberry Pi uses ARM64 architecture
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/gitsync-bot:${TAG} \
+            --push .
+
+      - name: Push image
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/gitsync-bot:${TAG}
+
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -49,6 +82,18 @@ jobs:
           echo "${{ secrets.PI_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
+      - name: Set deployment variables
+        run: |
+          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+  
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "COMPOSE_FILE=docker-compose.prod.yml" >> $GITHUB_ENV
+            echo "PROJECT_NAME=prod" >> $GITHUB_ENV
+          else
+            echo "COMPOSE_FILE=docker-compose.dev.yml" >> $GITHUB_ENV
+            echo "PROJECT_NAME=dev" >> $GITHUB_ENV
+          fi
+
       - name: Deploy to Raspberry Pi
         run: |
           ssh -o StrictHostKeyChecking=no \
@@ -58,22 +103,21 @@ jobs:
             cd ~/gitsync-bot
           
             echo "Pulling latest code..."
-            git pull origin main
+            git fetch origin
+            git checkout $BRANCH
+            git pull origin $BRANCH
           
-            echo "Stopping containers..."
-            docker compose down
-          
-            echo "Building new image..."
-            docker build -t gitsync-bot:local .
+            echo "Pulling latest image..."
+            docker compose -P $PROJECT_NAME -f $COMPOSE_FILE pull
           
             echo "Starting containers..."
-            docker compose up -d
+            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE up -d
           
             echo "Container status:"
-            docker compose ps
+            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE ps
           
             echo "Recent logs:"
-            docker compose logs --tail=50 gitsync-bot
+            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE logs --tail=50 gitsync-bot
           
             echo "Cleaning up..."
             docker image prune -f

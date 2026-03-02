@@ -1,24 +1,19 @@
 spring:
-  application:
-    name: gitsync
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
     username: botuser
     password: ${DB_PASSWORD}
+  application:
+    name: gitsync
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
 
-discord:
-  bot:
-    token: ${GITSYNC_API_KEY:REQUIRED_BUT_MISSING}
-
 github:
   oauth:
     client-id: ${GITHUB_CLIENT_ID}
     client-secret: ${GITHUB_CLIENT_SECRET}
-    callback-url: https://bot.gitsync-bot.us/api/oauth/github/callback
+    callback-route: /api/oauth/github/callback
   api:
     base-url: https://api.github.com
     base-public-url: https://github.com
