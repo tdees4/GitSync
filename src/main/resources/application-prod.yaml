@@ -2,9 +2,5 @@ spring:
   datasource:
     url: jdbc:postgresql://postgres-prod:5432/postgres
 
-discord:
-  bot:
-    token: ${GITSYNC_API_KEY:REQUIRED_BUT_MISSING}
-
 app:
   base-url: https://bot.gitsync-bot.us

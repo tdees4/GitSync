@@ -25,8 +25,6 @@ public class JdaConfig {
     public JDA jda(List<ListenerAdapter> eventListeners,
                    List<SlashCommand> commandList) {
 
-        System.out.println("Resolved Discord Token: " + token);
-
         JDABuilder builder = JDABuilder.createDefault(token)
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS);
 

@@ -9,6 +9,10 @@ spring:
       ddl-auto: update
     show-sql: true
 
+discord:
+  bot:
+    token: ${GITSYNC_API_KEY:REQUIRED_BUT_MISSING}
+
 github:
   oauth:
     client-id: ${GITHUB_CLIENT_ID}
