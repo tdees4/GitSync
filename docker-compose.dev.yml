@@ -23,7 +23,10 @@ services:
         max-file: "3"
 
   gitsync-bot:
-    image: tdees15/gitsync-bot:dev
+    image: tdees4/gitsync-bot:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: gitsync-bot-dev
     restart: unless-stopped
     depends_on:
