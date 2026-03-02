@@ -50,6 +50,15 @@ jobs:
           echo "${{ secrets.PI_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
+      - name: Set up variables
+        run: |
+          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "COMPOSE_FILE=docker-compose.prod.yml" >> $GITHUB_ENV
+          else
+            echo "COMPOSE_FILE=docker-compose.dev.yml" >> $GITHUB_ENV
+          fi
+
       - name: Deploy to Raspberry Pi
         run: |
           ssh -o StrictHostKeyChecking=no \
@@ -58,16 +67,6 @@ jobs:
           
             cd ~/gitsync-bot
 
-            echo "Setting up variables..."
-            echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-            if [[ "${GITHUB_REF##*/}" == "main" ]]; then
-              echo "COMPOSE_FILE=docker-compose.prod.yml" >> $GITHUB_ENV
-              echo "PROJECT_NAME=prod" >> $GITHUB_ENV
-            else
-              echo "COMPOSE_FILE=docker-compose.dev.yml" >> $GITHUB_ENV
-              echo "PROJECT_NAME=dev" >> $GITHUB_ENV
-            fi
-          
             echo "Pulling latest code..."
             git fetch origin
             git checkout $BRANCH
