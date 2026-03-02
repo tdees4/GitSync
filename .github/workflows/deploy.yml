@@ -79,16 +79,16 @@ jobs:
             docker compose -P $PROJECT_NAME -f $COMPOSE_FILE down
           
             echo "Building latest image..."
-            docker compose -P $PROJECT_NAME -f $COMPOSE_FILE build --no-cache
+            docker compose -f $COMPOSE_FILE build --no-cache
           
             echo "Starting containers..."
-            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE up -d
+            docker compose -f $COMPOSE_FILE up -d
           
             echo "Container status:"
-            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE ps
+            docker compose -f $COMPOSE_FILE ps
           
             echo "Recent logs:"
-            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE logs --tail=50 gitsync-bot
+            docker compose -f $COMPOSE_FILE logs --tail=50 gitsync-bot
           
             echo "Cleaning up..."
             docker image prune -f
