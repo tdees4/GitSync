@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -32,7 +33,7 @@ jobs:
           name: test-results
           path: build/reports/tests/
 
-  deploy:
+  build-and-deploy:
     needs: test
     runs-on: ubuntu-latest
 
@@ -49,31 +50,45 @@ jobs:
           echo "${{ secrets.PI_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
+      - name: Set up variables
+        run: |
+          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "COMPOSE_FILE=docker-compose.prod.yml" >> $GITHUB_ENV
+            echo "PROJECT_NAME=prod" >> $GITHUB_ENV
+          else
+            echo "COMPOSE_FILE=docker-compose.dev.yml" >> $GITHUB_ENV
+            echo "PROJECT_NAME=dev" >> $GITHUB_ENV
+          fi
+
       - name: Deploy to Raspberry Pi
         run: |
           ssh -o StrictHostKeyChecking=no \
               -o ProxyCommand="cloudflared access ssh --hostname ${{ secrets.PI_HOST }}" \
-              ${{ secrets.PI_USERNAME }}@${{ secrets.PI_HOST }} << 'EOF'
+              ${{ secrets.PI_USERNAME }}@${{ secrets.PI_HOST }} \
+              "BRANCH=$BRANCH COMPOSE_FILE=$COMPOSE_FILE PROJECT_NAME=$PROJECT_NAME bash -s" << 'EOF'
           
             cd ~/gitsync-bot
-          
+
             echo "Pulling latest code..."
-            git pull origin main
+            git fetch origin
+            git checkout $BRANCH
+            git pull origin $BRANCH
           
             echo "Stopping containers..."
-            docker compose down
+            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE down
           
-            echo "Building new image..."
-            docker build -t gitsync-bot:local .
+            echo "Building latest image..."
+            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE build
           
             echo "Starting containers..."
-            docker compose up -d
+            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE up -d
           
             echo "Container status:"
-            docker compose ps
+            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE ps
           
             echo "Recent logs:"
-            docker compose logs --tail=50 gitsync-bot
+            docker compose -p $PROJECT_NAME -f $COMPOSE_FILE logs --tail=50 gitsync-bot
           
             echo "Cleaning up..."
             docker image prune -f

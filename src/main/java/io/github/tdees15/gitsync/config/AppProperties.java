@@ -6,9 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "github.oauth")
-public class OAuthProperties {
-    private String clientId;
-    private String clientSecret;
-    private String callbackRoute;
+@ConfigurationProperties(prefix = "app")
+public class AppProperties {
+    private String baseUrl;
 }

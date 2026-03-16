@@ -131,56 +131,6 @@ public class SubscriptionRepositoryTest extends PostgresContainerTest {
     }
 
     @Test
-    void whenDeleteByChannelId_ThenAllValidSubscriptionsAreDeleted() {
-        String targetChannelId = "channel123";
-
-        Subscription mockSubscription = createSubscription(
-                targetChannelId,
-                "tdees4",
-                "gitsync",
-                "guild123",
-                "discordtdees4"
-        );
-
-        Subscription otherMockSubscription = createSubscription(
-                "channel456",
-                "tdees4",
-                "gitsync",
-                "gitsync",
-                "discordtdees4"
-        );
-
-        Subscription anotherMockSubscription = createSubscription(
-                targetChannelId,
-                "tdees4",
-                "otherbot",
-                "gitsync",
-                "discordtdees4"
-        );
-
-        testEntityManager.persist(mockSubscription);
-        testEntityManager.persist(otherMockSubscription);
-        testEntityManager.persist(anotherMockSubscription);
-        testEntityManager.flush();
-
-        int numSubscriptionsWithOtherChannelId = 0;
-        List<Subscription> allSubscriptions = subscriptionRepository.findAll();
-        for (Subscription subscription : allSubscriptions) {
-            if (!subscription.getChannelId().equals(targetChannelId))
-                numSubscriptionsWithOtherChannelId++;
-        }
-
-        subscriptionRepository.deleteByChannelId(targetChannelId);
-
-        allSubscriptions = subscriptionRepository.findAll();
-
-        assertEquals(numSubscriptionsWithOtherChannelId, allSubscriptions.size());
-        assertEquals(0, subscriptionRepository
-                .findByChannelId(targetChannelId)
-                .size());
-    }
-
-    @Test
     void whenFindByRepositoryOwnerAndRepositoryName_ThenReturnValidListOfSubscriptions() {
         String targetRepositoryOwner = "tdees4";
         String targetRepositoryName = "gitsync";

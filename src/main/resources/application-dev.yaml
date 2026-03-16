@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-dev:5432/postgres_dev
+
+app:
+  base-url: https://dev-bot.gitsync-bot.us
