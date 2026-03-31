@@ -1,5 +1,6 @@
 package io.github.tdees15.gitsync.service;
 
+import io.github.tdees15.gitsync.common.WebhookEvent;
 import io.github.tdees15.gitsync.model.FilterConfig;
 import io.github.tdees15.gitsync.model.Subscription;
 import io.github.tdees15.gitsync.repository.SubscriptionRepository;
@@ -60,7 +61,7 @@ public class SubscriptionService {
 
         FilterConfig defaultFilter = new FilterConfig(
                 "*",
-                List.of("*"),
+                List.of(WebhookEvent.ALL),
                 List.of("*")
         );
 
@@ -92,6 +93,10 @@ public class SubscriptionService {
         }
 
         subscriptionRepository.delete(subscription.get());
+    }
+
+    public List<Subscription> getSubscriptionsByRepositoryOwnerAndName(String owner, String name) {
+        return subscriptionRepository.findByRepositoryOwnerAndRepositoryName(owner, name);
     }
 
     public List<Subscription> getSubscriptionsByChannelId(String channelId) {

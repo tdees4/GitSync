@@ -1,5 +1,6 @@
 package io.github.tdees15.gitsync.service;
 
+import io.github.tdees15.gitsync.common.WebhookEvent;
 import io.github.tdees15.gitsync.model.Subscription;
 import io.github.tdees15.gitsync.repository.SubscriptionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -111,7 +112,7 @@ public class SubscriptionServiceTest {
 
         assertFalse(result.getFilters().isEmpty());
         assertEquals("*", result.getFilters().getFirst().getBranchPattern());
-        assertTrue(result.getFilters().getFirst().getEventTypes().contains("*"));
+        assertTrue(result.getFilters().getFirst().getEvents().contains(WebhookEvent.ALL));
         assertTrue(result.getFilters().getFirst().getActions().contains("*"));
     }
 

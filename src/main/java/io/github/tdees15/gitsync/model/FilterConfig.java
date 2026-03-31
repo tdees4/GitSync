@@ -1,15 +1,16 @@
 package io.github.tdees15.gitsync.model;
 
+import io.github.tdees15.gitsync.common.WebhookEvent;
 import jakarta.annotation.Nullable;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class FilterConfig {
@@ -28,25 +29,31 @@ public class FilterConfig {
         this("*", null, null);
     }
 
-    public FilterConfig(String branchPattern, List<String> eventTypes, List<String> actions) {
+    public FilterConfig(String branchPattern, List<WebhookEvent> eventTypes, List<String> actions) {
         this.branchPattern = branchPattern;
         this.setEventTypes(eventTypes);
         this.setActions(actions);
     }
 
-    public List<String> getEventTypes() {
-        return Arrays.asList(eventTypesStr.split(","));
+    @NonNull
+    public List<WebhookEvent> getEvents() {
+        return Arrays.stream(eventTypesStr.split(","))
+                .map(WebhookEvent::fromString)
+                .toList();
     }
 
+    @NonNull
     public List<String> getActions() {
         return Arrays.asList(actionsStr.split(","));
     }
 
-    public void setEventTypes(@Nullable List<String> eventTypes) {
-        if (eventTypes == null || eventTypes.isEmpty()) {
+    public void setEventTypes(@Nullable List<WebhookEvent> events) {
+        if (events == null || events.isEmpty()) {
             this.eventTypesStr = "*";
         } else {
-            this.eventTypesStr = String.join(",", eventTypes);
+            this.eventTypesStr = events.stream()
+                    .map(WebhookEvent::toString)
+                    .collect(Collectors.joining(","));
         }
     }
 
