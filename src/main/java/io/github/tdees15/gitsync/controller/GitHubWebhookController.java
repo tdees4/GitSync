@@ -15,13 +15,13 @@ import tools.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/webhook/github/{webhookId}")
-public class GithubWebhookController {
+public class GitHubWebhookController {
 
     private final GithubWebhookService githubWebhookService;
     private final DiscordServerConfigRepository discordServerConfigRepository;
     private final GitHubWebhookHandlerFactory gitHubWebhookHandlerFactory;
 
-    public GithubWebhookController(GithubWebhookService githubWebhookService,
+    public GitHubWebhookController(GithubWebhookService githubWebhookService,
                                    DiscordServerConfigRepository discordServerConfigRepository,
                                    GitHubWebhookHandlerFactory gitHubWebhookHandlerFactory) {
         this.githubWebhookService = githubWebhookService;

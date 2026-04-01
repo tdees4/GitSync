@@ -3,11 +3,13 @@ package io.github.tdees15.gitsync.factory;
 import io.github.tdees15.gitsync.common.WebhookEvent;
 import io.github.tdees15.gitsync.handler.GitHubWebhookHandler;
 import jakarta.annotation.Nullable;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Component
 public class GitHubWebhookHandlerFactory {
 
     private final Map<WebhookEvent, GitHubWebhookHandler> handlerMap;
