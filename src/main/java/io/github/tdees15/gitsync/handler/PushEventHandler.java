@@ -5,13 +5,13 @@ import io.github.tdees15.gitsync.model.Subscription;
 import io.github.tdees15.gitsync.service.DiscordEmbedService;
 import io.github.tdees15.gitsync.service.GithubWebhookService;
 import io.github.tdees15.gitsync.service.SubscriptionService;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 
 import java.awt.*;
 import java.util.List;
 
-@Service("push")
+@Component
 public class PushEventHandler implements GitHubWebhookHandler {
 
     private final DiscordEmbedService discordEmbedService;

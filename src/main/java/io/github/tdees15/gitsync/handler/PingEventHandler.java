@@ -1,10 +1,10 @@
 package io.github.tdees15.gitsync.handler;
 
 import io.github.tdees15.gitsync.common.WebhookEvent;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 
-@Service("ping")
+@Component
 public class PingEventHandler implements GitHubWebhookHandler {
 
     @Override
