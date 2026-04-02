@@ -9,7 +9,7 @@ public class PingEventHandler implements GitHubWebhookHandler {
 
     @Override
     public void handle(JsonNode payload) {
-        String fullRepoName = payload.get("repository").asString();
+        String fullRepoName = payload.get("repository").get("full_name").asString();
 
         System.out.println("Received ping from " + fullRepoName);
     }
