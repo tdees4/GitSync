@@ -39,10 +39,11 @@ public class WebhookSetupCommand implements SlashCommand {
                                 :one:  Go to your repository and click `Settings` :right_arrow: `Webhooks`
                                 :two:  Click `Add webhook`
                                 :three:  Copy the URL `https://bot.gitsync-bot.us/webhook/github/%s` into the text box labeled `Payload URL`
-                                :four:  Enter the string `%s` into the text box labeled `Secret`
-                                :five:  Ensure SSL Verification is enabled
-                                :six:  Select `Send me everything` under `Which events would you like to trigger this webhook?`
-                                :seven:  Click `Add webhook`
+                                :four: Ensure `content-type` is set to `application/json`
+                                :five:  Enter the string `%s` into the text box labeled `Secret`
+                                :six:  Ensure SSL Verification is enabled
+                                :seven:  Select `Send me everything` under `Which events would you like to trigger this webhook?`
+                                :eight:  Click `Add webhook`
                                 """.formatted(serverConfig.getWebhookId(), serverConfig.getWebhookSecret())
                 )
                 .setEphemeral(true)

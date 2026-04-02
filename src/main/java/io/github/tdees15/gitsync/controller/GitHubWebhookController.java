@@ -36,6 +36,10 @@ public class GitHubWebhookController {
             @RequestHeader("X-GitHub-Event") String eventType,
             @RequestBody String rawPayload
     ) {
+        System.out.println("Received webhook!");
+        System.out.println("ID: " + webhookId);
+        System.out.println("Payload: " + rawPayload);
+
         DiscordServerConfig serverConfig = discordServerConfigRepository.findByWebhookId(webhookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Webhook ID not identified"));
 
