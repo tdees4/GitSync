@@ -34,7 +34,12 @@ public class DiscordEmbedService {
                 .setFooter("Gitsync Bot", null)
                 .build();
 
-        channel.sendMessageEmbeds(embed).queue();
+        channel.sendMessageEmbeds(embed).queue(
+                success -> System.out.println("Discord accepted the embed!"),
+                error -> {
+                    System.err.println("Discord rejected the embed. Reason:");
+                    error.printStackTrace();
+                });
     }
 
 }
