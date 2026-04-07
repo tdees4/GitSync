@@ -1,5 +1,6 @@
 package io.github.tdees15.gitsync.service;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.awt.*;
 
+@Slf4j
 @Service
 public class DiscordEmbedService {
 
@@ -21,11 +23,12 @@ public class DiscordEmbedService {
                                 Color color, String[] author) {
         TextChannel channel = jda.getTextChannelById(channelId);
 
+        log.info("JDA status: {}", jda.getStatus());
+        log.info("Guild count: {}", jda.getGuilds().size());
+        log.info("All text channels: {}", jda.getTextChannels());
+
         if (channel == null) {
-            StringBuilder channels = new StringBuilder();
-            for (TextChannel chnl : jda.getTextChannels())
-                channels.append(chnl.getId()).append(" : ").append(chnl.getName()).append("\n");
-            throw new IllegalArgumentException("Channel " + channelId + " not found\n" + channels);
+            throw new IllegalArgumentException("Channel " + channelId + " not found");
         }
 
         MessageEmbed embed = new EmbedBuilder()

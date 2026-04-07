@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,14 +24,16 @@ public class JdaConfig {
 
     @Bean
     public JDA jda(List<ListenerAdapter> eventListeners,
-                   List<SlashCommand> commandList) {
+                   List<SlashCommand> commandList) throws InterruptedException {
 
         JDABuilder builder = JDABuilder.createDefault(token)
-                .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS);
+                .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS)
+                .enableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
 
         eventListeners.forEach(builder::addEventListeners);
 
-        JDA jda = builder.build();
+        JDA jda = builder.build()
+                .awaitReady();
 
         List<SlashCommandData> discordCommands = commandList.stream()
                 .map(cmd -> Commands.slash(cmd.getName(), cmd.getDescription()).addOptions(cmd.getOptions()))
