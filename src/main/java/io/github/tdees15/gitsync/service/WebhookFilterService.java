@@ -44,7 +44,12 @@ public class WebhookFilterService {
     }
 
     private boolean matchesBranch(@NonNull FilterConfig filter, @NonNull String branchName) {
-        PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(filter.getBranchPattern());
+        String branchPattern = filter.getBranchPattern();
+
+        if (!branchPattern.startsWith("glob:") && !branchPattern.startsWith("regex:"))
+            branchPattern = "glob:" + branchPattern;
+
+        PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(branchPattern);
         return pathMatcher.matches(Path.of(branchName));
     }
 
