@@ -22,8 +22,10 @@ public class DiscordEmbedService {
         TextChannel channel = jda.getTextChannelById(channelId);
 
         if (channel == null) {
-            jda.getTextChannels().forEach(c -> System.out.println(c.getId() + " : " + c.getName()));
-            throw new IllegalArgumentException("Channel " + channelId + " not found");
+            StringBuilder channels = new StringBuilder();
+            for (TextChannel chnl : jda.getTextChannels())
+                channels.append(chnl.getId()).append(" : ").append(chnl.getName()).append("\n");
+            throw new IllegalArgumentException("Channel " + channelId + " not found\n" + channels);
         }
 
         MessageEmbed embed = new EmbedBuilder()
