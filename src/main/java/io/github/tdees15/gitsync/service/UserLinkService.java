@@ -36,6 +36,10 @@ public class UserLinkService {
         return userLinkRepository.findByDiscordId(discordId);
     }
 
+    public Optional<UserLink> findByGithubUsername(String githubUsername) {
+        return userLinkRepository.findByGithubUsername(githubUsername);
+    }
+
     @Transactional
     public void deleteByDiscordId(String discordId) {
         userLinkRepository.deleteByDiscordId(discordId);

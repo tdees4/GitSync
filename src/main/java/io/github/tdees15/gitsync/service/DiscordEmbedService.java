@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.util.Arrays;
 
 @Slf4j
 @Service
@@ -23,10 +24,6 @@ public class DiscordEmbedService {
                                 Color color, String[] author) {
         TextChannel channel = jda.getTextChannelById(channelId);
 
-        log.info("JDA status: {}", jda.getStatus());
-        log.info("Guild count: {}", jda.getGuilds().size());
-        log.info("All text channels: {}", jda.getTextChannels());
-
         if (channel == null) {
             throw new IllegalArgumentException("Channel " + channelId + " not found");
         }
@@ -41,10 +38,10 @@ public class DiscordEmbedService {
                 .build();
 
         channel.sendMessageEmbeds(embed).queue(
-                success -> System.out.println("Discord accepted the embed!"),
+                success -> log.info("Discord accepted the embed!"),
                 error -> {
-                    System.err.println("Discord rejected the embed. Reason:");
-                    error.printStackTrace();
+                    log.error("Discord rejected the embed. Reason:");
+                    log.error(Arrays.toString(error.getStackTrace()));
                 });
     }
 
