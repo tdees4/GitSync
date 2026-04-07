@@ -1,6 +1,7 @@
 package io.github.tdees15.gitsync.config;
 
 import io.github.tdees15.gitsync.discord.commands.SlashCommand;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Configuration
 @Profile("!test")
+@Slf4j
 public class JdaConfig {
 
     @Value("${discord.bot.token}")
@@ -34,6 +36,8 @@ public class JdaConfig {
 
         JDA jda = builder.build()
                 .awaitReady();
+
+        log.info("Logged in as: {}", jda.getSelfUser().getName());
 
         List<SlashCommandData> discordCommands = commandList.stream()
                 .map(cmd -> Commands.slash(cmd.getName(), cmd.getDescription()).addOptions(cmd.getOptions()))
