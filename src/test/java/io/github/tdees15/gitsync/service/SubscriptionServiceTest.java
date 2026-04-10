@@ -38,9 +38,6 @@ public class SubscriptionServiceTest {
         when(subscriptionRepository.save(any()))
                 .thenAnswer(i -> i.getArgument(0));
 
-        when(subscriptionRepository.saveAndFlush(any()))
-                .thenAnswer(i -> i.getArgument(0));
-
         Subscription result = subscriptionService.createSubscription(
                 "guild123",
                 "channel123",
@@ -97,9 +94,6 @@ public class SubscriptionServiceTest {
         )).thenReturn(Optional.empty());
 
         when(subscriptionRepository.save(any()))
-                .thenAnswer(i -> i.getArgument(0));
-
-        when(subscriptionRepository.saveAndFlush(any()))
                 .thenAnswer(i -> i.getArgument(0));
 
         Subscription result = subscriptionService.createSubscription(
