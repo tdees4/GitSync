@@ -1,13 +1,14 @@
 package io.github.tdees15.gitsync.model;
 
+import io.github.tdees15.gitsync.common.ActionType;
 import io.github.tdees15.gitsync.common.WebhookEvent;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,10 +27,10 @@ public class FilterConfig {
     private String actionsStr; // "opened,merged,etc..."
 
     public FilterConfig() {
-        this("*", null, null);
+        this("*", new ArrayList<>(), new ArrayList<>());
     }
 
-    public FilterConfig(String branchPattern, List<WebhookEvent> eventTypes, List<String> actions) {
+    public FilterConfig(String branchPattern, List<WebhookEvent> eventTypes, List<ActionType> actions) {
         this.branchPattern = branchPattern;
         this.setEventTypes(eventTypes);
         this.setActions(actions);
@@ -43,25 +44,21 @@ public class FilterConfig {
     }
 
     @NonNull
-    public List<String> getActions() {
-        return Arrays.asList(actionsStr.split(","));
+    public List<ActionType> getActions() {
+        return Arrays.stream(actionsStr.split(","))
+                .map(ActionType::fromString)
+                .toList();
     }
 
-    public void setEventTypes(@Nullable List<WebhookEvent> events) {
-        if (events == null || events.isEmpty()) {
-            this.eventTypesStr = "*";
-        } else {
-            this.eventTypesStr = events.stream()
-                    .map(WebhookEvent::toString)
-                    .collect(Collectors.joining(","));
-        }
+    public void setEventTypes(@NonNull List<WebhookEvent> events) {
+        this.eventTypesStr = events.stream()
+                .map(WebhookEvent::toString)
+                .collect(Collectors.joining(","));
     }
 
-    public void setActions(@Nullable List<String> actions) {
-        if (actions == null || actions.isEmpty()) {
-            this.actionsStr = "*";
-        } else {
-            this.actionsStr = String.join(",", actions);
-        }
+    public void setActions(@NonNull List<ActionType> actions) {
+        this.actionsStr = actions.stream()
+                .map(ActionType::toString)
+                .collect(Collectors.joining(","));
     }
 }

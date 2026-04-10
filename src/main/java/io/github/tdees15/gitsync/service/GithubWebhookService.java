@@ -1,5 +1,6 @@
 package io.github.tdees15.gitsync.service;
 
+import io.github.tdees15.gitsync.common.ActionType;
 import io.github.tdees15.gitsync.common.WebhookEvent;
 import io.github.tdees15.gitsync.model.Subscription;
 import org.springframework.stereotype.Service;
@@ -23,16 +24,18 @@ public class GithubWebhookService {
     public List<Subscription> filterSubscriptionsByEventAndBranch(List<Subscription> subscriptions,
                                                                   WebhookEvent event, String branchName) {
         return subscriptions.stream()
-                .filter(subscription -> subscription.getFilters().stream()
+                .filter(subscription ->
+                        subscription.getFilters().isEmpty() || subscription.getFilters().stream()
                         .anyMatch(filter -> webhookFilterService.isMatch(filter, event, branchName)))
                 .toList();
     }
 
     public List<Subscription> filterSubscriptionsByEventAndBranchAndAction(List<Subscription> subscriptions, WebhookEvent event,
-                                                                           String branchName, String action) {
+                                                                           String branchName, ActionType action) {
         return subscriptions.stream()
-                .filter(subscription -> subscription.getFilters().stream()
-                        .anyMatch(filter -> webhookFilterService.isMatchWithAction(filter, event, branchName, action)))
+                .filter(subscription ->
+                        subscription.getFilters().isEmpty() || subscription.getFilters().stream()
+                        .anyMatch(filter -> webhookFilterService.isMatch(filter, event, branchName, action)))
                 .toList();
     }
 

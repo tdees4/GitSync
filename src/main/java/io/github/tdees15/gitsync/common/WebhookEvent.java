@@ -1,9 +1,9 @@
 package io.github.tdees15.gitsync.common;
 
 public enum WebhookEvent {
-    ALL("*"),
     PING("ping"),
-    PUSH("push");
+    PUSH("push"),
+    ISSUES("issues");
 
     private final String name;
 
@@ -16,7 +16,7 @@ public enum WebhookEvent {
             if (name.equalsIgnoreCase(event.name))
                 return event;
         }
-        throw new IllegalArgumentException("No valid Webhook Event called " + name);
+        return null;
     }
 
     @Override

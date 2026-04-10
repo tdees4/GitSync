@@ -1,7 +1,5 @@
 package io.github.tdees15.gitsync.service;
 
-import io.github.tdees15.gitsync.common.WebhookEvent;
-import io.github.tdees15.gitsync.model.FilterConfig;
 import io.github.tdees15.gitsync.model.Subscription;
 import io.github.tdees15.gitsync.repository.SubscriptionRepository;
 import jakarta.transaction.Transactional;
@@ -55,18 +53,6 @@ public class SubscriptionService {
         subscription.setRepositoryName(name);
         subscription.setCreatedBy(userId);
         subscription.setCreatedAt(LocalDateTime.now());
-
-        // Ensure the subscription row exists before filter row
-        subscription = subscriptionRepository.saveAndFlush(subscription);
-
-        FilterConfig defaultFilter = new FilterConfig(
-                "*",
-                List.of(WebhookEvent.ALL),
-                List.of("*")
-        );
-
-        subscription.getFilters().clear();
-        subscription.getFilters().add(defaultFilter);
 
         return subscriptionRepository.save(subscription);
     }

@@ -2,7 +2,6 @@ package io.github.tdees15.gitsync.handler;
 
 import io.github.tdees15.gitsync.common.WebhookEvent;
 import io.github.tdees15.gitsync.model.Subscription;
-import io.github.tdees15.gitsync.model.UserLink;
 import io.github.tdees15.gitsync.service.DiscordEmbedService;
 import io.github.tdees15.gitsync.service.GithubWebhookService;
 import io.github.tdees15.gitsync.service.SubscriptionService;
@@ -12,58 +11,51 @@ import tools.jackson.databind.JsonNode;
 
 import java.awt.*;
 import java.util.List;
-import java.util.Optional;
 
 @Component
-public class PushEventHandler implements GitHubWebhookHandler {
-
-    private final DiscordEmbedService discordEmbedService;
-    private final GithubWebhookService githubWebhookService;
-    private final SubscriptionService subscriptionService;
-    private final UserLinkService userLinkService;
+public class PushEventHandler extends AbstractGitHubWebhookHandler {
 
     public PushEventHandler(DiscordEmbedService discordEmbedService,
                             GithubWebhookService githubWebhookService,
                             SubscriptionService subscriptionService,
                             UserLinkService userLinkService) {
-        this.discordEmbedService = discordEmbedService;
-        this.githubWebhookService = githubWebhookService;
-        this.subscriptionService = subscriptionService;
-        this.userLinkService = userLinkService;
+        super(discordEmbedService, githubWebhookService, subscriptionService, userLinkService);
     }
 
     @Override
-    public void handle(JsonNode payload) {
-        String fullRepoName = payload.get("repository").get("full_name").asString();
-        String[] repoSplit = fullRepoName.split("/");
-        String repoOwner = repoSplit[0];
-        String repoName = repoSplit[1];
-        String username = payload.get("pusher").get("name").asString();
-        int commitCount = payload.get("commits").size();
-        String baseCommitUrl = payload.get("head_commit").requireNonNull().get("url").asString();
-        String ref = payload.get("ref").asString();
-        String branchName = ref.replace("refs/heads/", "");
+    protected String getGitHubUsername(JsonNode payload) {
+        return payload.path("pusher").path("name").asString();
+    }
 
-        Optional<UserLink> userLinkOpt = userLinkService.findByGithubUsername(username);
-        if (userLinkOpt.isPresent())
-            username = "<@" + userLinkOpt.get().getDiscordId() + ">";
+    @Override
+    protected List<Subscription> getSubscriptions(WebhookContext context) {
+        return githubWebhookService.filterSubscriptionsByEventAndBranch(
+                subscriptionService.getSubscriptionsByRepositoryOwnerAndName(context.repoOwner(), context.repoName()),
+                WebhookEvent.PUSH,
+                context.branchName()
+        );
+    }
 
-        List<Subscription> subscriptions = githubWebhookService.filterSubscriptionsByEventAndBranch(
-                        subscriptionService.getSubscriptionsByRepositoryOwnerAndName(repoOwner, repoName),
-                        WebhookEvent.PUSH,
-                        branchName
-                );
+    @Override
+    protected void sendNotification(Subscription sub, WebhookContext context) {
+        int commitCount = context.payload().path("commits").size();
 
-        for (Subscription subscription : subscriptions) {
-            discordEmbedService.sendGitHubEmbed(
-                    subscription.getChannelId(),
-                    username + " pushed to " + fullRepoName,
-                    username + " has made a push of " + commitCount + " commit(s).",
-                    baseCommitUrl,
-                    Color.BLUE,
-                    new String[]{username, null, null}
-            );
-        }
+        String baseCommitMessage = context.payload().path("head_commit").requireNonNull().path("message").asString();
+        if (baseCommitMessage.isEmpty())
+            baseCommitMessage = "! No commit message found !";
+
+        String baseCommitUrl = context.payload().path("head_commit").requireNonNull().path("url").asString();
+
+        String[] author = {context.discordMention(), null, null};
+
+        discordEmbedService.sendGitHubEmbed(
+                sub.getChannelId(),
+                "**" + context.fullRepoName() + "**: Push",
+                "**" + context.discordMention() + "** has made a push of " + commitCount + " commit(s).\n\nHead commit message:\n" + baseCommitMessage,
+                baseCommitUrl,
+                Color.BLUE,
+                author
+        );
     }
 
     @Override

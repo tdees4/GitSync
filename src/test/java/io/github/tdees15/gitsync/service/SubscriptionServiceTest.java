@@ -1,6 +1,5 @@
 package io.github.tdees15.gitsync.service;
 
-import io.github.tdees15.gitsync.common.WebhookEvent;
 import io.github.tdees15.gitsync.model.Subscription;
 import io.github.tdees15.gitsync.repository.SubscriptionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,7 +91,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    void createSubscription_DefaultFilter_IsAllEvents() {
+    void createSubscription_DefaultFilter_IsNoEvents() {
         when(subscriptionRepository.findByChannelIdAndRepositoryOwnerAndRepositoryName(
                 any(), any(), any()
         )).thenReturn(Optional.empty());
@@ -110,10 +109,7 @@ public class SubscriptionServiceTest {
                 "user123"
         );
 
-        assertFalse(result.getFilters().isEmpty());
-        assertEquals("*", result.getFilters().getFirst().getBranchPattern());
-        assertTrue(result.getFilters().getFirst().getEvents().contains(WebhookEvent.ALL));
-        assertTrue(result.getFilters().getFirst().getActions().contains("*"));
+        assertTrue(result.getFilters().isEmpty());
     }
 
     @Test
