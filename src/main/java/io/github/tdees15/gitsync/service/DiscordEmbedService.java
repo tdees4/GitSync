@@ -21,7 +21,7 @@ public class DiscordEmbedService {
     }
 
     public void sendGitHubEmbed(String channelId, String title, String description, String url,
-                                Color color, String[] author) {
+                                Color color) {
         TextChannel channel = jda.getTextChannelById(channelId);
 
         if (channel == null) {
@@ -33,7 +33,6 @@ public class DiscordEmbedService {
                 .setDescription(description)
                 .setUrl(url)
                 .setColor(color)
-                .setAuthor(author[0], author[1], author[2])
                 .setFooter("Gitsync Bot", null)
                 .build();
 

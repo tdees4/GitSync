@@ -7,6 +7,7 @@ import io.github.tdees15.gitsync.service.DiscordEmbedService;
 import io.github.tdees15.gitsync.service.GithubWebhookService;
 import io.github.tdees15.gitsync.service.SubscriptionService;
 import io.github.tdees15.gitsync.service.UserLinkService;
+import net.dv8tion.jda.api.JDA;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 
@@ -19,8 +20,9 @@ public class IssuesEventHandler extends AbstractGitHubWebhookHandler {
     public IssuesEventHandler(DiscordEmbedService discordEmbedService,
                               GithubWebhookService githubWebhookService,
                               SubscriptionService subscriptionService,
-                              UserLinkService userLinkService) {
-        super(discordEmbedService, githubWebhookService, subscriptionService, userLinkService);
+                              UserLinkService userLinkService,
+                              JDA jda) {
+        super(discordEmbedService, githubWebhookService, subscriptionService, userLinkService, jda);
     }
 
     @Override
@@ -50,15 +52,13 @@ public class IssuesEventHandler extends AbstractGitHubWebhookHandler {
         String action = context.payload().get("action").asString();
         int issueId = context.payload().get("issue").get("id").asInt();
         String issueUrl = context.payload().get("issue").get("url").asString();
-        String[] author = {context.discordMention(), null, null};
 
         discordEmbedService.sendGitHubEmbed(
                 sub.getChannelId(),
                 "**" + context.fullRepoName() + "**: Issue",
-                context.discordMention() + " has " + action + " issue " + issueId,
+                context.assignedName() + " has " + action + " issue " + issueId,
                 issueUrl,
-                Color.RED,
-                author
+                Color.RED
         );
     }
 

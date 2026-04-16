@@ -6,6 +6,7 @@ import io.github.tdees15.gitsync.service.DiscordEmbedService;
 import io.github.tdees15.gitsync.service.GithubWebhookService;
 import io.github.tdees15.gitsync.service.SubscriptionService;
 import io.github.tdees15.gitsync.service.UserLinkService;
+import net.dv8tion.jda.api.JDA;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 
@@ -18,8 +19,9 @@ public class PushEventHandler extends AbstractGitHubWebhookHandler {
     public PushEventHandler(DiscordEmbedService discordEmbedService,
                             GithubWebhookService githubWebhookService,
                             SubscriptionService subscriptionService,
-                            UserLinkService userLinkService) {
-        super(discordEmbedService, githubWebhookService, subscriptionService, userLinkService);
+                            UserLinkService userLinkService,
+                            JDA jda) {
+        super(discordEmbedService, githubWebhookService, subscriptionService, userLinkService, jda);
     }
 
     @Override
@@ -46,15 +48,12 @@ public class PushEventHandler extends AbstractGitHubWebhookHandler {
 
         String baseCommitUrl = context.payload().path("head_commit").requireNonNull().path("url").asString();
 
-        String[] author = {context.discordMention(), null, null};
-
         discordEmbedService.sendGitHubEmbed(
                 sub.getChannelId(),
                 "**" + context.fullRepoName() + "**: Push",
-                "**" + context.discordMention() + "** has made a push of " + commitCount + " commit(s).\n\nHead commit message:\n" + baseCommitMessage,
+                "**" + context.assignedName() + "** has made a push of " + commitCount + " commit(s).\n\n**Head commit message**\n" + baseCommitMessage,
                 baseCommitUrl,
-                Color.BLUE,
-                author
+                Color.BLUE
         );
     }
 
