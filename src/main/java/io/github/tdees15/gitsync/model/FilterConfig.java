@@ -11,6 +11,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -40,6 +41,7 @@ public class FilterConfig {
     public List<WebhookEvent> getEvents() {
         return Arrays.stream(eventTypesStr.split(","))
                 .map(WebhookEvent::fromString)
+                .filter(Objects::nonNull)
                 .toList();
     }
 
@@ -47,6 +49,7 @@ public class FilterConfig {
     public List<ActionType> getActions() {
         return Arrays.stream(actionsStr.split(","))
                 .map(ActionType::fromString)
+                .filter(Objects::nonNull)
                 .toList();
     }
 

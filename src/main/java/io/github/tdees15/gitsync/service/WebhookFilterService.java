@@ -23,10 +23,6 @@ public class WebhookFilterService {
         return matchesEvents(filter, event) && matchesBranch(filter, branch);
     }
 
-    public boolean isMatch(@NonNull FilterConfig filter, WebhookEvent event, ActionType action) {
-        return matchesEvents(filter, event) && matchesAction(filter, action);
-    }
-
     private boolean matchesEvents(@NonNull FilterConfig filter, @NonNull WebhookEvent eventType) {
         List<WebhookEvent> acceptedEvents = filter.getEvents();
 
