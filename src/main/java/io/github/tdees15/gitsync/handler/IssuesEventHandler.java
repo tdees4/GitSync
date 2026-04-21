@@ -49,13 +49,13 @@ public class IssuesEventHandler extends AbstractGitHubWebhookHandler {
     @Override
     protected void sendNotification(Subscription sub, WebhookContext context) {
         String action = context.payload().get("action").asString();
-        int issueId = context.payload().get("issue").get("id").asInt();
+        int issueNum = context.payload().get("issue").get("number").asInt();
         String issueUrl = context.payload().get("issue").get("url").asString();
 
         discordEmbedService.sendGitHubEmbed(
                 sub.getChannelId(),
                 "**" + context.fullRepoName() + "** Issue Alert",
-                context.assignedName() + " has " + action + " issue " + issueId,
+                context.assignedName() + " has " + action + " issue #" + issueNum,
                 issueUrl,
                 Color.RED
         );
