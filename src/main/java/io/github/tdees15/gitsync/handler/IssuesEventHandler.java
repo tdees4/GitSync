@@ -39,10 +39,9 @@ public class IssuesEventHandler extends AbstractGitHubWebhookHandler {
     protected List<Subscription> getSubscriptions(WebhookContext context) {
         ActionType action = ActionType.fromString(context.payload().get("action").asString());
 
-        return githubWebhookService.filterSubscriptionsByEventAndBranchAndAction(
+        return githubWebhookService.filterSubscriptionsByEventAndAction(
                 subscriptionService.getSubscriptionsByRepositoryOwnerAndName(context.repoOwner(), context.repoName()),
                 WebhookEvent.ISSUES,
-                context.branchName(),
                 action
         );
     }
@@ -55,11 +54,16 @@ public class IssuesEventHandler extends AbstractGitHubWebhookHandler {
 
         discordEmbedService.sendGitHubEmbed(
                 sub.getChannelId(),
-                "**" + context.fullRepoName() + "**: Issue",
+                "**" + context.fullRepoName() + "** Issue Alert",
                 context.assignedName() + " has " + action + " issue " + issueId,
                 issueUrl,
                 Color.RED
         );
+    }
+
+    @Override
+    protected String getBranchName(JsonNode payload) {
+        return "*";
     }
 
     @Override

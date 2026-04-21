@@ -50,11 +50,16 @@ public class PushEventHandler extends AbstractGitHubWebhookHandler {
 
         discordEmbedService.sendGitHubEmbed(
                 sub.getChannelId(),
-                "**" + context.fullRepoName() + "**: Push",
-                "**" + context.assignedName() + "** has made a push of " + commitCount + " commit(s).\n\n**Head commit message**\n" + baseCommitMessage,
+                "**" + context.fullRepoName() + "** Push Alert",
+                "**" + context.assignedName() + "** has made a push of " + commitCount + " commit(s) to branch " + context.branchName() + ".\n\n**Head commit message**\n" + baseCommitMessage,
                 baseCommitUrl,
                 Color.BLUE
         );
+    }
+
+    @Override
+    protected String getBranchName(JsonNode payload) {
+        return payload.get("ref").asString().replace("refs/heads/", "");
     }
 
     @Override

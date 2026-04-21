@@ -58,7 +58,7 @@ public abstract class AbstractGitHubWebhookHandler implements GitHubWebhookHandl
 
         String repoOwner = repoSplit[0];
         String repoName = repoSplit[1];
-        String branchName = payload.get("ref").asString().replace("refs/heads/", "");
+        String branchName = getBranchName(payload);
 
         String gitHubUsername = getGitHubUsername(payload);
 
@@ -85,4 +85,5 @@ public abstract class AbstractGitHubWebhookHandler implements GitHubWebhookHandl
     protected abstract String getGitHubUsername(JsonNode payload);
     protected abstract List<Subscription> getSubscriptions(WebhookContext context);
     protected abstract void sendNotification(Subscription sub, WebhookContext context);
+    protected abstract String getBranchName(JsonNode payload);
 }

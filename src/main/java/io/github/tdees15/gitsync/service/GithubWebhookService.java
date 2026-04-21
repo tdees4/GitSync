@@ -30,6 +30,15 @@ public class GithubWebhookService {
                 .toList();
     }
 
+    public List<Subscription> filterSubscriptionsByEventAndAction(List<Subscription> subscriptions,
+                                                                  WebhookEvent event, ActionType action) {
+        return subscriptions.stream()
+                .filter(subscription ->
+                        subscription.getFilters().isEmpty() || subscription.getFilters().stream()
+                                .anyMatch(filter -> webhookFilterService.isMatch(filter, event, action)))
+                .toList();
+    }
+
     public List<Subscription> filterSubscriptionsByEventAndBranchAndAction(List<Subscription> subscriptions, WebhookEvent event,
                                                                            String branchName, ActionType action) {
         return subscriptions.stream()
