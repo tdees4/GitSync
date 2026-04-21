@@ -54,7 +54,7 @@ public class IssuesEventHandler extends AbstractGitHubWebhookHandler {
 
         discordEmbedService.sendGitHubEmbed(
                 sub.getChannelId(),
-                "**" + context.fullRepoName() + "** Issue Alert",
+                ":bangbang:" + context.fullRepoName() + " Issue:bangbang:",
                 context.assignedName() + " has " + action + " issue #" + issueNum,
                 issueUrl,
                 Color.RED
